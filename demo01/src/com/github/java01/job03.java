@@ -61,6 +61,7 @@ class Array {
 // 生产者操作媒介
 class AddArray extends Thread{
     Array array;
+    Random r = new Random();
 
     public AddArray(Array array) {
         this.array = array;
@@ -68,28 +69,23 @@ class AddArray extends Thread{
 
     @Override
     public void run() {
-        // 生产者将添加10个随机数
-        while(true){
+        // 生产者将添加随机数
+        while(true) {
             synchronized (array) {
-                if(! array.intList.isEmpty()){
+                if (!array.intList.isEmpty()) {
                     try {
                         array.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                for (int x = 0; x < 10; x++) {
-                    int num = new Random().nextInt(100) + 1;
-                    array.intList.add(num);
-                    if(x==9){
-                        System.out.println("添加完毕: "+ array.intList);
-                    }
-                }
 
+                int num = r.nextInt(100) + 1;
+                array.intList.add(num);
+                System.out.println(array.intList);
                 array.notify();
             }
         }
-
     }
 }
 
@@ -108,6 +104,7 @@ class RemoveArray extends Thread{
             synchronized (array) {
                 if( array.intList.isEmpty()){
                     try {
+                        System.out.println("等待添加元素");
                         array.wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -123,7 +120,6 @@ class RemoveArray extends Thread{
                 array.notify();
             }
         }
-
     }
 }
 
