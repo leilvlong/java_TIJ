@@ -20,16 +20,12 @@ import java.util.Random;
         在执行同步代码块时另外三条线程已经获取了容器的信息)
         当其中一条线程执行并修改了容器后,另外三条线程中的某条进入同步代码块执行
         但是并未收到容器已被修改的消息 对容器的操作就会出现问题而导致抛出异常
+        就好像收到一条诡异的来自2017年8月的短信 告诉你2017年双色球号码是多少
+        买了必中,然后你信了 去买了 天知道会发生什么
 单生产多消费看来我还是想的太简单了 呵! 呵! 呵!
  */
 public class job04 {
     public static void main(String[] args) {
-        Array04 array04 = new Array04();
-        AddArray04 addArray04 = new AddArray04(array04);
-        RemoveArray04 remove04 = new RemoveArray04(array04);
-        addArray04.start();
-        remove04.start();
-
 
 
     }
