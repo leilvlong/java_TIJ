@@ -1,7 +1,6 @@
 package com.github.java01;
 
-import java.util.ArrayList;
-import java.util.Random;
+
 
 /*
 进程间共享数据可以轻易实现,使用同步代码块可以确保数据的安全
@@ -36,10 +35,16 @@ import java.util.Random;
  */
 
 
+import java.util.ArrayList;
+import java.util.Random;
+
 /*
 单生产单消费
 一条线程往ArrayList 添加元素
-一条线程将ArrayList 删除元素
+一条线程将ArrayList 删除元素:
+    或者开多条线程删除元素(其实单生产多消费原理没什么不同)
+        (呵呵 我还是太天真!!!)
+        最保守稳定的做法还是单生产单消费
 
  */
 public class job03 {
@@ -79,7 +84,6 @@ class AddArray extends Thread{
                         e.printStackTrace();
                     }
                 }
-
                 int num = r.nextInt(100) + 1;
                 array.intList.add(num);
                 System.out.println(array.intList);
