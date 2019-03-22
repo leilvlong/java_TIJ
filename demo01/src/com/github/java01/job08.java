@@ -7,6 +7,7 @@ import java.util.Random;
 之前遇到的解决不了的问题先丢在一边
 多线程案例:
     一个生产者生产8条数据在ArrayList中 4条线程交替删除元素
+
  */
 public class job08 {
     static ArrayList<Integer> integers = new ArrayList<>();
@@ -40,25 +41,16 @@ public class job08 {
         new Thread(()->{
             while(true){
                 synchronized (job08.class) {
-                    while( integers.isEmpty()){
+                    while( integers.isEmpty() || count !=1){
                         try {
                             job08.class.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    /*while( count != 1 ){
-                        try {
-                            job08.class.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }*/
                     System.out.println(Thread.currentThread().getName()+"当前容器为: "+integers);
-                    if(! integers.isEmpty()){
-                        System.out.println("删除元素为: " + integers.get(0));
-                        integers.remove(0);
-                    }
+                    System.out.println("删除元素为: " + integers.get(0));
+                    integers.remove(0);
 
 
                     job08.class.notifyAll();
@@ -72,25 +64,18 @@ public class job08 {
         new Thread(()->{
             while(true){
                 synchronized (job08.class) {
-                    while( integers.isEmpty()){
+                    while( integers.isEmpty() || count != 2 ){
                         try {
                             job08.class.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    /*while( count != 2 ){
-                        try {
-                            job08.class.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }*/
+
                     System.out.println(Thread.currentThread().getName()+"当前容器为: "+integers);
-                    if(! integers.isEmpty()){
-                        System.out.println("删除元素为: " + integers.get(0));
-                        integers.remove(0);
-                    }
+                    System.out.println("删除元素为: " + integers.get(0));
+                    integers.remove(0);
+
 
                     job08.class.notifyAll();
 
@@ -103,25 +88,18 @@ public class job08 {
         new Thread(()->{
             while(true){
                 synchronized (job08.class) {
-                    while( integers.isEmpty()){
+                    while( integers.isEmpty() || count != 3){
                         try {
                             job08.class.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    /*while( count != 3){
-                        try {
-                            job08.class.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }*/
+
                     System.out.println(Thread.currentThread().getName()+"当前容器为: "+integers);
-                    if(! integers.isEmpty()){
-                        System.out.println("删除元素为: " + integers.get(0));
-                        integers.remove(0);
-                    }
+                    System.out.println("删除元素为: " + integers.get(0));
+                    integers.remove(0);
+
 
                     job08.class.notifyAll();
 
@@ -134,25 +112,16 @@ public class job08 {
         new Thread(()->{
             while(true){
                 synchronized (job08.class) {
-                    while( integers.isEmpty()){
+                    while( integers.isEmpty() || count != 4){
                         try {
                             job08.class.wait();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    /*while( count != 4 ){
-                        try {
-                            job08.class.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }*/
                     System.out.println(Thread.currentThread().getName()+"当前容器为: "+integers);
-                    if(! integers.isEmpty()){
-                        System.out.println("删除元素为: " + integers.get(0));
-                        integers.remove(0);
-                    }
+                    System.out.println("删除元素为: " + integers.get(0));
+                    integers.remove(0);
 
                     job08.class.notifyAll();
 
