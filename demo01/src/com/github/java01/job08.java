@@ -7,6 +7,8 @@ import java.util.Random;
 之前遇到的解决不了的问题先丢在一边
 多线程案例:
     一个生产者生产8条数据在ArrayList中 4条线程交替删除元素
+记住一个原则:
+    线程在哪里"睡的","醒了"就从哪里开始干活
 
  */
 public class job08 {
