@@ -12,21 +12,23 @@ package com.github.java02;
         而且,我们也得知: 静态的初始化比普通成员的初始化来的跟早
             (之前的分析已经得出 类中的成员变量都会被初始化(为指定则用默认值,指定则使用指定值))
 (通过分别注释可以直观的看到效果:
-
+    1.
+    2.
+    3.
         )
  */
 public class job05 {
     public static void main(String[] args) {
-        // 第二次执行时及以后都不注释
+        // 2.第二次执行时及以后都不注释
         new Cupboard();
         new Cupboard();
 
-        // 第三次执行才不注释
+        //3. 第三次执行才不注释
         table.tableFun(1);
         cupboard.cupboardFun(2);
     }
 
-    // 第一次执行不注释及以后都不注释
+    // 1.第一次执行不注释及以后都不注释
     static Table table = new Table();
     static Cupboard cupboard = new Cupboard();
 }
