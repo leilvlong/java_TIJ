@@ -13,11 +13,11 @@ import java.util.ArrayList;
  */
 public class job10 {
     public static void main(String[] args) {
-        int[] ints = new int[10000000];
-        for (int x = 0; x < 10000000; x++) {
+        int[] ints = new int[10];
+        for (int x = 0; x < 10; x++) {
             ints[x]=x;
         }
-        int num = 78;
+        int num = 0;
         fun1(ints,num);
     }
 
@@ -31,9 +31,9 @@ public class job10 {
             mid = (end - start)/2 +start;
             mids.add(mid);
             if(num<ints[mid]){
-                end = mid;
+                end = mid-1;
             }else if(num>ints[mid]){
-                start = mid;
+                start = mid+1;
             }else{
                 System.out.println(mid);
                 break;
