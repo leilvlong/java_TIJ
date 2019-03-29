@@ -68,13 +68,13 @@ I/O的使用虽然简便  但是对应的类很多 使用起来各具特点:
  */
 public class job04 {
     public static void main(String[] args) throws Exception {
-        //fun1();
+        fun1();
         //fun2();
         //fun3();
         //fun4();
         //fun5();
         //fun6();
-        fun7();
+        //fun7();
     }
 
     /*
@@ -82,8 +82,8 @@ public class job04 {
         FileOutputStream     输出字节流(write())
      */
     public static void fun1() throws IOException {
-        FileInputStream fil = new FileInputStream("demo01\\funs\\aaa.txt");
-        FileOutputStream fos = new FileOutputStream("demo01\\funs\\bbb.txt");
+        FileInputStream fil = new FileInputStream("demo01/funs/aaa.txt");
+        FileOutputStream fos = new FileOutputStream("demo01/funs/bbb.txt");
 
         for(int byt; (byt = fil.read()) != -1;){
             fos.write(byt);
