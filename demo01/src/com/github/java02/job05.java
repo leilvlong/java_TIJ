@@ -5,7 +5,8 @@ package com.github.java02;
         静态成员的数据初始化程序生命运行周期中只有一次初始:
             从下面的例子中也可以看到静态优先于类构造器的初始化而优先初始化
             而且静态数据只在被调用时初始化,而静态代码块则会在加载进JVM虚拟
-            机内存时会随着类的加载而加载,自动执行,且只会执行一次
+            机内存时会随着类的加载而加载,自动执行,且在整个程序生命执行周期
+            只会执行一次
 (通过分别注释可以直观的看到效果:
     1.
     2.
@@ -26,6 +27,9 @@ public class job05 {
     // 1.
     static Table table = new Table();
     static Cupboard cupboard = new Cupboard();
+    static {
+        new Bow();
+    }
 }
 
 
