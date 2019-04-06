@@ -50,8 +50,26 @@ import java.util.Random;
 
 public class  job18 {
     public static void main(String[] args) {
+
+
+        /*/
+        /第一次访问该类以及静态成员
+        System.out.println(FinalClass.num);
+        // 第二次访问
+        System.out.println(FinalClass.num);
+        // 静态代码块的输出只有一次
+        */
+
+        //通过构造器访问
+       /*
         new FinalClass();
         System.out.println(FinalClass.num);
+        System.out.println(FinalClass.num);
+        // 静态代码块的依然输出只有一次
+        num的值为发生任何改变(通过随机样本赋值的)
+        */
+
+
     }
 }
 
@@ -77,9 +95,7 @@ final class FinalClass{
     public FinalClass() {
         this.index = fun();
         fun2();
-        for (int i = 0; i < 100; i++) {
-            new FinalClass().fun2();
-        }
+        //new FinalClass();
     }
 
 
