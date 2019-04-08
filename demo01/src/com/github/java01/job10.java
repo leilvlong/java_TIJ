@@ -13,12 +13,7 @@ import java.util.ArrayList;
  */
 public class job10 {
     public static void main(String[] args) {
-        int[] ints = new int[10];
-        for (int x = 0; x < 10; x++) {
-            ints[x]=x;
-        }
-        int num = 0;
-        fun1(ints,num);
+
     }
 
     public static void fun1 (int[] ints, int num){
@@ -44,4 +39,13 @@ public class job10 {
         System.out.println(mids);
     }
 
+
+    public static void fun2(int a, int b){
+        // 求任意两个正整数之间的所有数之和
+        if( (b+1-a) % 2 ==0){
+            System.out.println( (a+b) * (b+1 -a) / 2);
+        }else{
+            System.out.println( (a+b) * ((b - a) / 2) + (a + (b - a) / 2));
+        }
+    }
 }
