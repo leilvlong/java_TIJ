@@ -16,12 +16,15 @@ package com.github.java05;
             认他们的关系,允许向上转型，运行时使用SubClass的方法，
             当导出类没有覆写方法时,则使用基类的
              （对动态绑定机制的的分析尝试）
-向下转型(编译不报错运行报错)：
-        危险的行为,，导出类一定会具备基类的所有非私有属性，
+向下转型(编译不报错运行各种麻烦)：
+        第一种：将原本是“父类引用指向导出类对象”的引用向
+    下转型该对象的原本类型，这种转型基于双方都初始化后的转
+    型，因而向下转型是可行且危险性较低的（儿子与爸爸面对面）
+        第二种： new 对象时转型。
+        危险的行为，导出类一定会具备基类的所有非私有属性，
     且导出类被初始化时会将基类初始化。
-       基类却不一定具有导出类的属性(扩展),且基类被初始化时
-    被初始化时导出类不会被初始化,   向下转型时不会加载导出
-    类的属性,因而若使用导出类的属性会抛出异常。
+        基类却不一定具有导出类的属性(扩展),且基类被初始化
+    时导出类不会被初始化,  向下转型时不会加载导出类的属性。
         以下案例足以说明问题, 尝试对这种机制的分析:
                 导出类初始化时基类一定会被初始化,这个多次案例以说明
             并且也可以为动态绑定提供先天条件。
@@ -33,7 +36,7 @@ package com.github.java05;
                     此时一个继承体系的某个节点需要被使用,只需向上初
                     始化即可，而若想完成向下转型,因为对向下转型的未
                     知(extends与 implements虽然维持了向上的关系,却并
-                    未维持向下的关系),则需要对该继承树初始化
+                    未维持向下的关系),除非对该继承树都初始化
                         模拟继承图: (123代表基类 每一个数字代表一个体系)
                                       123
             1.1          |            2.1            |           3.1
@@ -43,7 +46,16 @@ package com.github.java05;
     向下呈现扇形 向上线型
     继承接龙: A extends B extends C  extends Z
               D extends E extends F  extends Z
-    A B C D E F通过关键字往上找轻而易举 Z通过关键字往下找几乎不可实现(除非每个关键字不同)
+    A B C D E F通过关键字往上找轻而易举 Z通过关键字往下找几乎不可实现，除非每个关键字不同
+    试图以这种方式向下转型编译时没错(编译器知道他们是一类的) 运行时异常 are in unnamed module of loader 'app'
+    证明我的猜想是有一定道理的
+
+继承带来属性加强：
+    将原本是“父类引用指向导出类对象”的引用向下转型为该对象的原本类型这种则是建立在该对象的初始化已经完成
+总结:
+    转型的前提是双方都初始化且互有关联才可以做到的(需要面对面的那种关联 ('='号相连))
+    Sub subs = (Sub) new BaseClass();虽然也互有关联,但是Sub是没有被初始化的
+
 
  多态:
     继承
@@ -57,44 +69,110 @@ package com.github.java05;
 
 
 import javax.sql.DataSource;
+import java.util.concurrent.Flow;
 
 public class job01{
     public static void main(String[] args) {
-        Fu fu = new Zi();
-        Zi zi = (Zi) new Fu();
-        zi.fun3();
+        /*
+        父类初始 子类不会初始
+        BaseClass baseClass = new BaseClass();
+        */
+
+        /*
+        多态
+        BaseClass baseClass = new Sub();
+        baseClass.fun();
+        baseClass.print();
+        baseClass.getIndex();
+         */
+
+        /*
+        向下转型（面对面）
+        BaseClass baseClass = new Sub();
+        baseClass.fun();
+        baseClass.print();
+        baseClass.getIndex();
+        //会出异常 遥控器没有这个功能
+        baseClass.out
+
+        // 相当于换了个能真正解放所有功能的遥控器
+        Sub sub = (Sub) baseClass;
+        sub.fun();
+        sub.print();
+        sub.getIndex();
+        sub.out();
+         */
+
+
+        /*
+        而这样编译没问题 运行会出问题
+        Sub subs = (Sub) new BaseClass();
+        */
+
     }
 }
 
-class Fu{
-    private int index = 10;
-    public Fu() {
-        System.out.println("fu 初始");
+
+
+class BaseClass{
+    private int index=10;
+
+    public BaseClass() {
+        //System.out.println("baseClass 初始");
     }
 
-    void fun1(){
-        System.out.println("fun1");
+    public BaseClass(int index) {
+        this.index = index;
     }
 
-    void fun2(){
-        System.out.println("fun2");
+    public void fun(){
+        System.out.println("baseClass fun");
+    }
+
+    public void print() {
+        System.out.println("baseClass print");
+    }
+
+    public void getIndex() {
+        System.out.println(index);
     }
 }
 
-class Zi extends Fu{
-    public Zi() {
-        System.out.println("zi 初始");
+class Sub extends BaseClass{
+    public Sub() {
+        //System.out.println("sub 初始");
     }
 
-    void fun1(){
-        System.out.println("ZI fun1");
+    public Sub(int index) {
+        super(index);
     }
 
-    void fun2(){
-        System.out.println("ZI fun2");
+    @Override
+    public void fun() {
+        System.out.println("sub fun");
     }
 
-    void fun3(){
-        System.out.println("fun3");
+    @Override
+    public void print() {
+        System.out.println("sub print");
+    }
+
+    public void out(){
+        System.out.println("sub out");
     }
 }
+
+class sub2 extends BaseClass{
+    private boolean status = false;
+
+    public sub2(boolean status) {
+        this.status=status;
+        if (this.status != true){
+            throw new ExceptionInInitializerError("No initialization");
+        }
+        System.out.println("sub2 初始");
+    }
+}
+
+
+
