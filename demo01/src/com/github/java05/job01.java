@@ -16,8 +16,8 @@ package com.github.java05;
             认他们的关系,允许向上转型，运行时使用SubClass的方法，
             当导出类没有覆写方法时,则使用基类的
              （对动态绑定机制的的分析尝试）
-向下转型：
-        危险的行为，导出类一定会具备基类的所有非私有属性，
+向下转型(编译不报错运行报错)：
+        危险的行为,，导出类一定会具备基类的所有非私有属性，
     且导出类被初始化时会将基类初始化。
        基类却不一定具有导出类的属性(扩展),且基类被初始化时
     被初始化时导出类不会被初始化,   向下转型时不会加载导出
@@ -61,10 +61,13 @@ import javax.sql.DataSource;
 public class job01{
     public static void main(String[] args) {
         Fu fu = new Zi();
+        Zi zi = (Zi) new Fu();
+        zi.fun3();
     }
 }
 
 class Fu{
+    private int index = 10;
     public Fu() {
         System.out.println("fu 初始");
     }
