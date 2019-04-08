@@ -44,7 +44,16 @@ package com.github.java05;
     继承接龙: A extends B extends C  extends Z
               D extends E extends F  extends Z
     A B C D E F通过关键字往上找轻而易举 Z通过关键字往下找几乎不可实现(除非每个关键字不同)
- */
+
+ 多态:
+    继承
+    父类引用指向导出类对象
+    重写基类方法
+    运行时只能运行基类具有的方法与属性 若导出类没有
+    因为导出类初始时基类会被初始,所以会使用基类的
+    打个比方,引用是遥控器,对象是空调,尽管空调有 A B C D E 这些模式
+    但遥控器只有 A B C 这些选项
+  */
 
 
 import javax.sql.DataSource;
@@ -52,8 +61,6 @@ import javax.sql.DataSource;
 public class job01{
     public static void main(String[] args) {
         Fu fu = new Zi();
-
-
     }
 }
 
