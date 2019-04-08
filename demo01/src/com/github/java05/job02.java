@@ -12,11 +12,13 @@ import java.util.Arrays;
     2.每一个动态代理类都必须要实现InvocationHandler这个接口
         方法: invoke
             参数1: Object proxy:
-                代理对象
+                this
             参数2: Method method,
-                代理方法
+                代理方法:
+                method.invoke(代理对象, Object[] args)
             参数3: Object[] args
-                代理参数 数组形式存取
+                代理参数 数组形式存取(作为method.invoke的参数之一)
+            返回值
     3.Proxy动态创建一个代理实例
         静态方法: Proxy.newProxyInstance
             参数1: InvocationHandler.getClass().getClassLoader()
@@ -33,27 +35,31 @@ public class job02 {
 
         //3.代理实现
         Subject subject =(Subject)Proxy.newProxyInstance(handler.getClass().getClassLoader(),real.getClass().getInterfaces(),handler);
-        subject.print("java",5);
-        subject.out("word",10);
+
+        //调用方法 对原本方法的返回值做出修改
+        System.out.println(subject.print("java", 5));
+        System.out.println(subject.out("word", 10));
     }
 }
 
 interface Subject{
-    void print(String str,int num);
-    void out(String str, int num);
+    String print(String str,int num);
+    String out(String str, int num);
 }
 
 
 class RealSubject implements Subject{
 
     @Override
-    public void print(String str, int num) {
-        System.out.println("print hello " + str + " " + num);
+    public String print(String str, int num) {
+        //System.out.println("print hello " + str + " " + num);
+        return str;
     }
 
     @Override
-    public void out(String str, int num) {
-        System.out.println("out hello "+ str + " " + num );
+    public String out(String str, int num) {
+        //System.out.println("out hello "+ str + " " + num );
+        return str;
     }
 }
 
@@ -68,13 +74,11 @@ class DynamicProxy implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        for (Object arg : args) {
-            System.out.println("遍历arg[]: " + arg);
-        }
-        System.out.println("method: "+ method);
-        method.invoke(subject,args);
-        System.out.println("args[]: "+ Arrays.toString(args));
-        return null;
+
+        //System.out.println("method: "+ method);
+        Object invoke = method.invoke(subject,args);
+        //System.out.println("args[]: "+ Arrays.toString(args));
+        return String.valueOf(invoke)+args[args.length-1];
     }
 
     public void fun(){
