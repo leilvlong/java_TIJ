@@ -40,8 +40,9 @@ public class JdbcTest {
             select * from gameplays where name='leifsfe'and pasword='leiosdfe' or 1='1'
          */
         //fun1("leifsfe","leiosdfe' or 1='1");
-        fun2("leifsfe", "leiosdfe' or 1='1");
-        fun2("leione", "leione");
+        //fun2("leifsfe", "leiosdfe' or 1='1");
+        //fun2("leione", "leione");
+        fun3();
 
     }
 
@@ -96,6 +97,27 @@ public class JdbcTest {
         //JdbcUtil.close(conn, ps, rs);
         rs.close();
         ps.close();
+
+    }
+
+    /**
+     * 尝试解决关闭连接后对象依然可用的问题
+     * 在关闭资源返回容器后将其引用设置为null
+     */
+    public static void fun3() throws SQLException {
+        String sql = "select * from studen where id=?";
+        Connection conn = JdbcUtil.getConn();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1,1);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        System.out.println("学生名字为: "+ rs.getString("name"));
+
+        rs.close();
+        ps.close();
+        conn.close();
+
+
 
     }
 }
