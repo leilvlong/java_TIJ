@@ -16,10 +16,22 @@ public class MyTemplatTest {
         jdbcTemplate.update(sql,"周八",22,1);*/
 
         MyTemplate jdbcTemplate = new MyTemplate(JdbcUtil.getDataSource());
-        String sql = "select name from studen where id=1";
-        if(jdbcTemplate.query(sql, String.class) instanceof String) {
-            System.out.println(jdbcTemplate.query(sql, String.class));
+        String sql = "select age from studen where id=1";
+
+        System.out.println(jdbcTemplate.query(sql, String.class));
+
+
+    }
+
+    public static void fun(String str){
+        boolean bool;
+        try{
+        Integer.parseInt(str);
+        bool = true;
+        }catch (Exception e){
+            bool = false;
         }
+        System.out.println(bool);
 
     }
 }
