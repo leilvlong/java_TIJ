@@ -68,7 +68,7 @@ public class MyTemplate {
         if (rs.next()){
             t = (T) rs.getObject(1);
         }
-        return null;
+        return t;
 
     }
 
