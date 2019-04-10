@@ -4,34 +4,33 @@ package com.javaJdbc.druid.myTemplat;
 import javax.sql.DataSource;
 import javax.swing.tree.RowMapper;
 import javax.swing.tree.TreePath;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /*
 模拟JDBC TempLate
     Update(实现增删改操作)
-    query(实现查询单数据(单条某列))
-        真正的template的查询实现要比这复杂的多，
-        会根据所传的 数据类型.class 来判断该查询
-        数据是否可以转为需求的数据类型或该查询数
-        据是否本身就是这种数据类型以及很多我尚未
-        想到的点
-            而我实现的是若查询的数据类型与传入的
-        类型不符合就抛出异常
-            如果需求类型是String应该是最好做的。
-            Class.class.getName.equls(java.lang.String)
-        String.valueOf就完事了
-            如果要转为非String类型,可以尝试使用正则匹配
-        matches,或者以抛出异常的方式来判断
-还是实现一下试试看
-我突然明白写框架的人为什么那么牛逼哄哄了:
-    不满足我的要求与规则就抛异常给你看
+    query实现查询单数据返回 (sql,需求数据类型,sql条件)
+        当需求数据类型与返回查询数据类型都非Sting时的转换未实现
  */
 public class MyTemplate {
+    private static Map<String,String> dataTypes = new HashMap<>();
+
+    static{
+        // 数据类型与对应的转换方法
+        dataTypes.put(String.class.getName(),"valueOf");
+        dataTypes.put(Long.class.getName(),"parseLong");
+        dataTypes.put(Integer.class.getName(),"parseInt");
+        dataTypes.put(Double.class.getName(),"parseDouble");
+        dataTypes.put(Float.class.getName(),"parseFloat");
+        dataTypes.put(Boolean.class.getName(),"parseBoolean");
+    }
+
+
     private DataSource dataSource;
 
     public MyTemplate(DataSource dataSource) {
@@ -62,39 +61,7 @@ public class MyTemplate {
         return i;
     }
 
-/*    public <T> T query(String sql, Class<T> type, Object ...args) throws SQLException,IllegalAccessException, InstantiationException {
-        //获取连接
-        Connection conn = dataSource.getConnection();
-        // 预编译sql语句
-        PreparedStatement ps = conn.prepareStatement(sql);
-
-        // 获取元选项并设置sql语句的参数
-        ParameterMetaData psmd = ps.getParameterMetaData();
-        int valueCount = psmd.getParameterCount();
-        if (valueCount != args.length) {
-            throw new SQLException("Value incoming error");
-        }
-        if (args.length != 0) {
-            for (int i = 1; i <= valueCount; i++) {
-                ps.setObject(i, args[i - 1]);
-            }
-        }
-
-        // 对查询集结果处理
-        T t = type.newInstance();
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()){
-            Object object = rs.getObject(1);
-            if(object.getClass().getName().equals(type.getName())){
-                t= (T) object;
-            }else{
-                throw new RuntimeException("return type error");
-            }
-        }
-        return t;
-    }*/
-
-    public <T> T query(String sql, Class<T> type, Object ...args) throws SQLException,IllegalAccessException, InstantiationException {
+    public <T> T query(String sql, Class<T> type, Object ...args) throws Exception {
         //获取连接
         Connection conn = dataSource.getConnection();
         // 预编译sql语句
@@ -114,66 +81,68 @@ public class MyTemplate {
 
 
         // 对查询集结果处理
-        T t = null;
         ResultSet rs = ps.executeQuery();
+
+        T data = getData(rs, type);
+
+        return data;
+    }
+
+
+    private <T> T getData(ResultSet rs, Class<T> type) throws Exception {
+        T data = null;
         if (rs.next()){
 
-            Object object = rs.getObject(1);
+            data = (T) rs.getObject(1);
 
-            if(object.getClass().getName().equals(type.getName())){
-                // 如果需求与查询集同一类型 可以直接返回了
-                t= (T) object;
-            }else if(type.getName().equals("java.lang.String")){
-                // 非字符串查询集转字符串
-                t = (T) String.valueOf(object);
-            }else if( object.getClass().equals("java.lang.String")){
-                //字符串查询集转非字符串 若匹配不上可选项 抛出异常
-                Object conversion = isConversion((String) object);
-                t= (T) conversion;
-            }else{
-                //非字符串之间的转换 能转则转 不能转抛异常
-                try{
-                    t= (T) object;
-                }catch (Exception e){
-                    throw new RuntimeException("Get type error");
+            //查询集数据类型与需求数据类型
+
+            if(dataTypes.containsKey(type.getName())){
+                while (true){
+                    //如果参数与需求是同一类型 直接返回
+                    if(data.getClass().getName().equals(type.getName())){
+                        break;
+                    }
+
+                    //如果需求是String类型
+                    if(type.getName().equals("java.lang.String")) {
+                        try {
+                            data = (T) String.valueOf(data);
+                            break;
+                        } catch (Exception e) {
+                            throw new RuntimeException("GET TYPE ERROR");
+                        }
+                    }
+
+                    //如果查询集为String,转为需求非String数据类型
+                    if(data.getClass().getName().equals("java.lang.String")){
+                        // 获取对应的包装类静态方法名与设置参数类型
+                        String md = dataTypes.get(type.getName());
+                        Method method = type.getMethod(md, data.getClass());
+                        try {
+                            data= (T) method.invoke(null,data);
+                            break;
+                        }catch (Exception e){
+                            throw new RuntimeException("GET TYPE ERROE");
+                        }
+                    }
+
+                    //如果查询集不是String 需求类型不是String
+                    if( ! data.getClass().getName().equals("java.lang.String")){
+                        // 由于查询集对应的java数据类型都是包装类 包装类互转不允许
+                        String dataType = dataTypes.get(data.getClass().getName());
+                    }
+
+                    throw new RuntimeException("TYPE GET NULL ERROR");
                 }
             }
+
         }
-        return t;
+        return data;
     }
 
-    private Object isConversion(String str){
-        //将传入的String 与他们做转换 成功则停止循环 返回true
-        // 若所有的都转换失败 则抛出异常
-        Object object;
-        while(true) {
-            try {
-                object = Integer.parseInt(str);
-                break;
-            } catch (Exception e) {
-            }
 
-            try {
-                object = Long.parseLong(str);
-                break;
-            } catch (Exception e) {
-            }
 
-            try {
-                object = Float.parseFloat(str);
-                break;
-            } catch (Exception e) {
-            }
-
-            try {
-                object = Double.parseDouble(str);
-                break;
-            } catch (Exception e) {
-            }
-            throw new RuntimeException("Get type error");
-        }
-        return object;
-    }
 
 }
 
