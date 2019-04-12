@@ -18,7 +18,7 @@ import java.util.*;
         只简单实现了常见的几种数据类型(int , double , String , boolean)
 
 代码虽然组织不好看 但jar包肯定也是做了数据类型的判断再进行转换的,而且代码组织比我肯定好的多
-
+反射真的是java的很重要的一部分
  */
 public class MyTemplate {
     private  Map<String,String> dataTypes = new HashMap<>();
@@ -64,7 +64,7 @@ public class MyTemplate {
         return i;
     }
 
-    public <T> Object query(String sql, Class<T> type, Object ...args) throws Exception {
+    public <T> T query(String sql, Class<T> type, Object ...args) throws Exception {
         //获取连接
         Connection conn = dataSource.getConnection();
         // 预编译sql语句
@@ -86,7 +86,7 @@ public class MyTemplate {
         // 对查询集结果处理
         ResultSet rs = ps.executeQuery();
 
-        Object data = getData(rs, type);
+        T data = (T) getData(rs, type);
 
         return data;
     }
@@ -98,7 +98,6 @@ public class MyTemplate {
 
             //查询数据
             data =  rs.getObject(1);
-
 
             if(dataTypes.containsKey(type.getName())){
                 while (true){
@@ -134,33 +133,26 @@ public class MyTemplate {
                         }
                     }
 
-                    //如果查询集不是String 且不是布尔值 需求类型不是String
-                    if( ! "java.lang.String".equals(data.getClass().getName()) && data.getClass().getName().contains("Boolean")){
+                    //如果查询集不是String 且不是布尔值 需求类型不是String 即互为整数或浮点数
+                    if( ! "java.lang.String".equals(data.getClass().getName()) && ! data.getClass().getName().contains("Boolean")){
                         //查询集对应的java数据类型都是包装类  需要做基本类型转换后在转换
                         Number dataNum = (Number)data;
-                        // 由于只存于非整数转整数的情形
-                        //或者float 转Double 以及布尔值
-                        //text以及imge等其它类型不在这个实现考虑中 因为太过复杂
                         String typeName = dataTypes.get(type.getName());
+
+
                         if("parseLong".equals(typeName)){
-                            Method valueOf = type.getMethod("valueOf", long.class);
-                            data =  valueOf.invoke(null, dataNum.intValue());
+                            data = (T) getDataValue(type,int.class,dataNum);
                             break;
                         }else if("parseInt".equals(typeName)){
-                            Method valueOf = type.getMethod("valueOf", int.class);
-                            data = valueOf.invoke(null, dataNum.intValue());
+                            data = (T) getDataValue(type,int.class,dataNum);
                             break;
                         }else if("parseDouble".equals(typeName)){
-                            Method valueOf = type.getMethod("valueOf", double.class);
-                            data =  valueOf.invoke(null, dataNum.doubleValue());
+                            data = (T) getDataValue(type,double.class,dataNum);
                             break;
-                        }
-                        if("parseFloat".equals(typeName)){
-                            Method valueOf = type.getMethod("valueOf", float.class);
-                            data = valueOf.invoke(null, dataNum.floatValue());
+                        }else if("parseFloat".equals(typeName)){
+                            data = (T) getDataValue(type,float.class,dataNum);
                             break;
-                        }
-                        if("parseBoolean".equals(typeName)){
+                        }else if("parseBoolean".equals(typeName)){
                             if(data.getClass().getName().contains("Integer") && ((int)data==0 ||(int)data ==1)){
                                 data = (int) data == 0 ? false : true;
                                 break;
@@ -170,10 +162,25 @@ public class MyTemplate {
                         }
                     }
 
-                    /*// 如果查询集为Boolean  同上差不多
+                    // 当查询集为Boolean时
                     if(data.getClass().getName().contains("Boolean")){
+                        Number boolData = (boolean) data ? 1 : 0;
+                        String typeName = dataTypes.get(type.getName());
 
-                    }*/
+                        if("parseLong".equals(typeName)){
+                            data = (T) getDataValue(type,int.class,boolData);
+                            break;
+                        }else if("parseInt".equals(typeName)){
+                            data = (T) getDataValue(type,int.class,boolData);
+                            break;
+                        }else if("parseDouble".equals(typeName)){
+                            data = (T) getDataValue(type,double.class,boolData);
+                            break;
+                        }else if("parseFloat".equals(typeName)){
+                            data = (T) getDataValue(type,float.class,boolData);
+                            break;
+                        }
+                    }
 
                     throw new RuntimeException("Type Get Null Error");
                 }
@@ -185,9 +192,11 @@ public class MyTemplate {
         return data;
     }
 
-
-
-
+    private <T> T getDataValue(Class<T> type,Object cla, Number dataNum)throws Exception{
+        //System.out.println(cla.getName());
+        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
+        return (T) valueOf.invoke(null, dataNum.intValue());
+    }
 
 
 }
