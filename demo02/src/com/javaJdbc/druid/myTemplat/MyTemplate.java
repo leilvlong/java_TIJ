@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
@@ -139,7 +140,6 @@ public class MyTemplate {
                         Number dataNum = (Number)data;
                         String typeName = dataTypes.get(type.getName());
 
-
                         if("parseLong".equals(typeName)){
                             data = (T) getDataValue(type,int.class,dataNum);
                             break;
@@ -147,10 +147,12 @@ public class MyTemplate {
                             data = (T) getDataValue(type,int.class,dataNum);
                             break;
                         }else if("parseDouble".equals(typeName)){
-                            data = (T) getDataValue(type,double.class,dataNum);
+                            double newDataNum = dataNum.doubleValue();
+                            data = (T) getDataValue(type,double.class,newDataNum);
                             break;
                         }else if("parseFloat".equals(typeName)){
-                            data = (T) getDataValue(type,float.class,dataNum);
+                            float newDataNum = dataNum.floatValue();
+                            data = (T) getDataValue(type,float.class,newDataNum);
                             break;
                         }else if("parseBoolean".equals(typeName)){
                             if(data.getClass().getName().contains("Integer") && ((int)data==0 ||(int)data ==1)){
@@ -198,6 +200,16 @@ public class MyTemplate {
         return (T) valueOf.invoke(null, dataNum.intValue());
     }
 
+    private <T> T getDataValue(Class<T> type,Object cla, double dataNum)throws Exception{
+        //System.out.println(cla.getName());
+        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
+        return (T) valueOf.invoke(null, dataNum);
+    }
+
+    private <T> T getDataValue(Class<T> type,Object cla, float dataNum)throws Exception{
+        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
+        return (T) valueOf.invoke(null, dataNum);
+    }
 
 }
 
