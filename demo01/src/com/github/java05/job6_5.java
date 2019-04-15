@@ -26,6 +26,65 @@ package com.github.java05;
     否知道无线网卡驱动并不影响他连接网络一样。
         但是如果无线网卡驱动坏了，你都不知道有这个东西，解
     决问题又何从谈起
-
-
+通过构造器获取对象时 该类的构造器总是最开始被访问,最后才工作的:
+    就如同一个员工第一个到公司,但是最后等所有人都下班以后才开始工作一样
  */
+
+
+public class job6_5 extends Subr3{
+    private int num;
+    private Subr4 subr4 = new Subr4();
+
+    public job6_5(int num, Subr4 subr4) {
+
+        System.out.println(this.subr4);
+        System.out.println(this.num);
+        this.num=num;
+        this.subr4=subr4;
+        System.out.println(subr4);
+        System.out.println(this.num);
+    }
+
+    public static void main(String[] args) {
+        // 通过输出结果很容易看到 导出类的初始化对基类的影响与 创建对象时初始化后构造器做的事
+        //构造器对本类的工作是最后开始的,这样可以确保每个成员都的到正确的初始化以及系统额外功能的开展
+        job6_5 job6_5 = new job6_5(5,new Subr4());
+
+    }
+}
+
+class Base1{
+    public Base1() {
+        System.out.println("Base1");
+    }
+}
+
+class Subr1 extends Base1 {
+    public Subr1() {
+        System.out.println("Subr1");
+    }
+}
+
+class Subr2 extends Subr1{
+    public Subr2() {
+        System.out.println("Subr2");
+    }
+}
+
+class Subr3 extends Subr2{
+    public Subr3(){
+        System.out.println("Subr3");
+    }
+}
+
+class Subr4{
+    private int count=10;
+    public Subr4() {
+        System.out.println("no base Subr4");
+    }
+
+    @Override
+    public String toString() {
+        return "Subr4{" + "count=" + count + '}';
+    }
+}
