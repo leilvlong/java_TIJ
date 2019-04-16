@@ -23,12 +23,27 @@ public class MyTemplatTest {
         MyTemplate jdbcTemplate = new MyTemplate(JdbcUtil.getDataSource());
         String sql = "select gender from studen where id=10";
 
-        Double query =  jdbcTemplate.query(sql, Double.class);
-        System.out.println(query);
+/*       Long query1 =  jdbcTemplate.query(sql, Long.class);
+        Integer query2 =  jdbcTemplate.query(sql, Integer.class);
+        Float query3 =  jdbcTemplate.query(sql, Float.class);
+        Double query4 =  jdbcTemplate.query(sql, Double.class);
+        String query5 =  jdbcTemplate.query(sql, String.class);
+       System.out.println("LONG :"+query1);
+       System.out.println("INTEGER :"+query2);
+       System.out.println("FLOAT :"+query3);
+       System.out.println("DOUBLE :"+query4);
+       System.out.println("STRING :"+query5);*/
 
-
-
-
+        Long query1 =  jdbcTemplate.query(sql, Long.class);
+        Integer query2 =  jdbcTemplate.query(sql, Integer.class);
+        Float query3 =  jdbcTemplate.query(sql, Float.class);
+        Double query4 =  jdbcTemplate.query(sql, Double.class);
+        String query5 =  jdbcTemplate.query(sql, String.class);
+        System.out.println("LONG :"+query1);
+        System.out.println("INTEGER :"+query2);
+        System.out.println("FLOAT :"+query3);
+        System.out.println("DOUBLE :"+query4);
+        System.out.println("STRING :"+query5);
     }
 
 

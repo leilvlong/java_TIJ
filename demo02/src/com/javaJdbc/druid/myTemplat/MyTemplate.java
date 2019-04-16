@@ -17,11 +17,16 @@ import java.util.*;
     通过反射获取构造器返回该需求类型
 
 涉及到需求为一个实体类或多个实体类时:
-    利用反射构造该对象,获取该对象的成员变量名与成员对象属性,并将成员属性暴力反射
+    利用反射构造该对象(Object.class.newInstance()),
+    获取该对象的成员变量名与成员对象属性,并将成员属性暴力反射 (Object.class,getFileds())
     ResultSet.next() 获取一行数据(一个对应的实体类对象)
-    利用该对象的成员变量名与属性类型在查询集获取对应的数据信息并设置
-    将设置好的对象返回
-    或将对象装入容器(List)返回
+    循环遍历获取的类成员属性数组 通过ResultSet.getObject(String name) 获取数据
+    实体类与数据表是对应的 因此成员变量名也应与数据库一致
+    设置值
+    当循环结束 一个对象即诞生了 将设置好的对象返回或将对象装入容器(List)返回
+    如果无法通过成员属性获取值 则抛出异常告诉template使用者实体类或数据表属性不对应
+
+只是模拟简单的实现原理,没有考虑额外的更多的意外情况
  */
 public class MyTemplate {
     private  String[] dataTypes = {
@@ -29,7 +34,9 @@ public class MyTemplate {
             Long.class.getName(),
             Integer.class.getName(),
             Double.class.getName(),
+            Float.class.getName(),
             Boolean.class.getName(),
+
     };
 
     private DataSource dataSource;
@@ -85,6 +92,9 @@ public class MyTemplate {
         ResultSet rs = ps.executeQuery();
 
         T data = (T) getData(rs, type);
+        if(data == null){
+            throw new SQLException("Get value is null");
+        }
 
         return data;
     }
@@ -96,27 +106,33 @@ public class MyTemplate {
 
             //查询数据
             Object selectData =  rs.getObject(1);
+            System.out.println(selectData.getClass().getSimpleName());
             List<String> dataType = Arrays.asList(dataTypes);
-            if(dataType.contains(type.getName()) && dataType.contains(selectData.getClass().getSimpleName())){
+            if(dataType.contains(type.getName()) && dataType.contains(selectData.getClass().getName())){
                 while (true){
                     //如果需求与查询集类型相同
                     if(type.getSimpleName().equals(selectData.getClass().getSimpleName())){
+                        data=selectData;
                         break;
                     }
 
                     // 如果需求为Boolean
-                    if(type.getSimpleName().equals("Boolean")){
-                        if(data.getClass().getSimpleName().equals("Integer") && ((int)data==1 || (int)data==0)){
-                            data = (int)data==1? true:false;
+                    if("Boolean".equals(type.getSimpleName())){
+                        if(selectData.getClass().getSimpleName().equals("Integer") && ((int)data==1 || (int)data==0)){
+                            data = ((int)selectData) == 1 ? true:false;
                             break;
                         }
                         throw new SQLException("Value Can't to Boolean");
                     }
 
                     // 当查询集为Boolean时 需求为非Boolean
-                    if(selectData.getClass().getSimpleName().equals("Boolean")){
-                        Integer boolData = (boolean) data ? 1 : 0;
-                        data = (T)getDataValue(type,data);
+                    if("Boolean".equals(selectData.getClass().getSimpleName())){
+                        if("String".equals(type.getSimpleName())){
+                            data = String.valueOf(selectData);
+                            break;
+                        }
+                        Integer boolData = (boolean) selectData ? 1 : 0;
+                        data = getDataValue(type,boolData);
                         break;
                     }
 
