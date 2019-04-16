@@ -1,14 +1,8 @@
 package com.javaJdbc.druid.myTemplat;
 
-
+// 利用反射 对各包装数据类型进行优化
 import javax.sql.DataSource;
-import javax.swing.tree.RowMapper;
-import javax.swing.tree.TreePath;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
-import java.math.BigDecimal;
+
 import java.sql.*;
 import java.util.*;
 
@@ -17,23 +11,26 @@ import java.util.*;
     Update(实现增删改操作)
     query实现查询单数据返回 (sql,需求数据类型,sql条件)
         只简单实现了常见的几种数据类型(int , double , String , boolean)
+案例分析:
+    根据反射获取类型信息,这些java数据的构造方法的共同点 都接收String
+    如果查询集与需求数据类型都为java中的包装数据类型 则将查询集转为String
+    通过反射获取构造器返回该需求类型
 
-代码虽然组织不好看 但jar包肯定也是做了数据类型的判断再进行转换的,而且代码组织比我肯定好的多
-反射真的是java的很重要的一部分
+涉及到需求为一个实体类或多个实体类时:
+    利用反射构造该对象,获取该对象的成员变量名与成员对象属性,并将成员属性暴力反射
+    ResultSet.next() 获取一行数据(一个对应的实体类对象)
+    利用该对象的成员变量名与属性类型在查询集获取对应的数据信息并设置
+    将设置好的对象返回
+    或将对象装入容器(List)返回
  */
 public class MyTemplate {
-    private  Map<String,String> dataTypes = new HashMap<>();
-
-    {
-        // 数据类型与对应的转换方法
-        dataTypes.put(String.class.getName(),"valueOf");
-        dataTypes.put(Long.class.getName(),"parseLong");
-        dataTypes.put(Integer.class.getName(),"parseInt");
-        dataTypes.put(Double.class.getName(),"parseDouble");
-        dataTypes.put(Float.class.getName(),"parseFloat");
-        dataTypes.put(Boolean.class.getName(),"parseBoolean");
-    }
-
+    private  String[] dataTypes = {
+            String.class.getName(),
+            Long.class.getName(),
+            Integer.class.getName(),
+            Double.class.getName(),
+            Boolean.class.getName(),
+    };
 
     private DataSource dataSource;
 
@@ -98,118 +95,56 @@ public class MyTemplate {
         if (rs.next()){
 
             //查询数据
-            data =  rs.getObject(1);
-
-            if(dataTypes.containsKey(type.getName())){
+            Object selectData =  rs.getObject(1);
+            List<String> dataType = Arrays.asList(dataTypes);
+            if(dataType.contains(type.getName()) && dataType.contains(selectData.getClass().getSimpleName())){
                 while (true){
-                    //如果参数与需求是同一类型 直接返回
-                    if(data.getClass().getName().equals(type.getName())){
+                    //如果需求与查询集类型相同
+                    if(type.getSimpleName().equals(selectData.getClass().getSimpleName())){
                         break;
                     }
 
-                    //如果需求是String类型
-                    if("java.lang.String".equals(type.getName())) {
-
-                        try {
-                            data =  String.valueOf(data);
-                            break;
-                        } catch (Exception e) {
-                            throw new RuntimeException("GET TYPE ERROR");
-                        }
-                    }
-
-                    //如果查询集为String,转为需求非String数据类型
-                    if("java.lang.String".equals(data.getClass().getName())){
-                        // 获取对应的包装类静态方法名与设置参数类型
-                        String mdName = dataTypes.get(type.getName());
-
-                        // 获取该对象的什么方法执行, 传入的参数类型字节码
-                        Method method = type.getMethod(mdName, data.getClass());
-                        try {
-                            // 对象 参数 因为是静态方法已经加载过字节码不需要对象
-                            data=  method.invoke(null,data);
-                            break;
-                        }catch (Exception e){
-                            throw new RuntimeException("Get Type Error");
-                        }
-                    }
-
-                    //如果查询集不是String 且不是布尔值 需求类型不是String 即互为整数或浮点数
-                    if( ! "java.lang.String".equals(data.getClass().getName()) && ! data.getClass().getName().contains("Boolean")){
-                        //查询集对应的java数据类型都是包装类  需要做基本类型转换后在转换
-                        Number dataNum = (Number)data;
-                        String typeName = dataTypes.get(type.getName());
-
-                        if("parseLong".equals(typeName)){
-                            data = (T) getDataValue(type,int.class,dataNum);
-                            break;
-                        }else if("parseInt".equals(typeName)){
-                            data = (T) getDataValue(type,int.class,dataNum);
-                            break;
-                        }else if("parseDouble".equals(typeName)){
-                            double newDataNum = dataNum.doubleValue();
-                            data = (T) getDataValue(type,double.class,newDataNum);
-                            break;
-                        }else if("parseFloat".equals(typeName)){
-                            float newDataNum = dataNum.floatValue();
-                            data = (T) getDataValue(type,float.class,newDataNum);
-                            break;
-                        }else if("parseBoolean".equals(typeName)){
-                            if(data.getClass().getName().contains("Integer") && ((int)data==0 ||(int)data ==1)){
-                                data = (int) data == 0 ? false : true;
-                                break;
-                            }else{
-                                throw new RuntimeException("Get Type Error");
-                            }
-                        }
-                    }
-
-                    // 当查询集为Boolean时
-                    if(data.getClass().getName().contains("Boolean")){
-                        Number boolData = (boolean) data ? 1 : 0;
-                        String typeName = dataTypes.get(type.getName());
-
-                        if("parseLong".equals(typeName)){
-                            data = (T) getDataValue(type,int.class,boolData);
-                            break;
-                        }else if("parseInt".equals(typeName)){
-                            data = (T) getDataValue(type,int.class,boolData);
-                            break;
-                        }else if("parseDouble".equals(typeName)){
-                            data = (T) getDataValue(type,double.class,boolData);
-                            break;
-                        }else if("parseFloat".equals(typeName)){
-                            data = (T) getDataValue(type,float.class,boolData);
+                    // 如果需求为Boolean
+                    if(type.getSimpleName().equals("Boolean")){
+                        if(data.getClass().getSimpleName().equals("Integer") && ((int)data==1 || (int)data==0)){
+                            data = (int)data==1? true:false;
                             break;
                         }
+                        throw new SQLException("Value Can't to Boolean");
                     }
 
-                    throw new RuntimeException("Type Get Null Error");
+                    // 当查询集为Boolean时 需求为非Boolean
+                    if(selectData.getClass().getSimpleName().equals("Boolean")){
+                        Integer boolData = (boolean) data ? 1 : 0;
+                        data = (T)getDataValue(type,data);
+                        break;
+                    }
+
+                    //需求为非Boolean 需求与查询类型不同
+                    if(! type.getSimpleName().equals(selectData.getClass().getSimpleName())){
+                        data = (T)getDataValue(type,selectData);
+                        break;
+                    }
+
+                    throw new SQLException("Value get Error");
                 }
-            }else{
-                throw new RuntimeException("Type Does not support");
             }
-
         }
+
         return data;
     }
 
-    private <T> T getDataValue(Class<T> type,Object cla, Number dataNum)throws Exception{
-        //System.out.println(cla.getName());
-        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
-        return (T) valueOf.invoke(null, dataNum.intValue());
+    private  <T> T getDataValue(Class<T> type, Object object) throws Exception {
+        T t=null;
+        try{
+             t = type.getConstructor(String.class).newInstance(String.valueOf(object));
+        }catch (Exception e){
+            throw new SQLException("Value get Error");
+        }
+        return t;
     }
 
-    private <T> T getDataValue(Class<T> type,Object cla, double dataNum)throws Exception{
-        //System.out.println(cla.getName());
-        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
-        return (T) valueOf.invoke(null, dataNum);
-    }
 
-    private <T> T getDataValue(Class<T> type,Object cla, float dataNum)throws Exception{
-        Method valueOf = type.getMethod("valueOf", (Class<?>) cla);
-        return (T) valueOf.invoke(null, dataNum);
-    }
 
 }
 
