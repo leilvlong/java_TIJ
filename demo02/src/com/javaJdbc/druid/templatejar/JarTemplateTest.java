@@ -24,21 +24,26 @@ queryForList 该方法有多个重载 但是返回值是将查询的多条数据
 
 query(sql,RowMapper)  该方法可将数据表对应的实体类设置好并获取对象返回到List<T>中
 
+jdbc template 只需获取连接池对象并传入构造中即可使用
+
  */
 
 
 public class JarTemplateTest {
     static JdbcTemplate jt = new JdbcTemplate(JdbcUtil.getDataSource());
     public static void main(String[] args) {
+        //fun1();
+        //fun2();
+        //fun3();
         fun4();
     }
 
     static void fun1(){
-        String sql1 = "select name from studen where id=1";
-        System.out.println(jt.queryForObject(sql1, String.class));
+        String sql1 = "select gender from studen where id=1";
+        System.out.println(jt.queryForObject(sql1, Double.class));
 
-        String sql2 = "select name from studen where id=? and age=?";
-        System.out.println(jt.queryForObject(sql2, String.class, 1, 19));
+        /*String sql2 = "select name from studen where id=? and age=?";
+        System.out.println(jt.queryForObject(sql2, String.class, 1, 19));*/
 
     }
     static void fun2(){
@@ -66,5 +71,9 @@ public class JarTemplateTest {
         for (Studen studen : studens) {
             System.out.println(studen);
         }
+
+        String sql2 = "select * from studen where id=1";
+        Studen studen = (Studen) jt.queryForObject(sql2,new BeanPropertyRowMapper<>(Studen.class));
+        System.out.println(studen);
     }
 }
