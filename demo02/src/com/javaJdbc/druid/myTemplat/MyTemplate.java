@@ -178,8 +178,14 @@ public class MyTemplate {
 
     private <T> T getObject(ResultSet rs,Class<T> object) throws SQLException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
         T t = object.getConstructor().newInstance();
-        //获取对象属性
+        //获取对象所有的成员属性
         Field[] declaredFields = object.getDeclaredFields();
+        //获取查询集列数  应当与成员属性对应
+        int columnCount = rs.getMetaData().getColumnCount();
+        if(columnCount != declaredFields.length){
+            throw new SQLException("Object property with table property inconformity");
+        }
+
         if (rs.next()) {
             Object rsData = null;
             for (Field declaredField : declaredFields) {
