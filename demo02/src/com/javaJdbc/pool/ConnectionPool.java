@@ -119,10 +119,8 @@ public class ConnectionPool implements DataSource {
                 }
             }
         }
-        if(conn instanceof MyconnectionPool){
-            ((MyconnectionPool)conn).setStatus();
-        }
 
+        // 返回代理对象
         return getConn(conn);
     }
 
@@ -132,6 +130,7 @@ public class ConnectionPool implements DataSource {
      */
     private  Connection getConn(Connection conn){
         InvocationHandler newMyPool = new NewMyPool(conn, conections);
+        ((NewMyPool) newMyPool).setStatus();
         conn = (Connection) Proxy.newProxyInstance(NewMyPool.class.getClassLoader(), new Class[]{Connection.class}, newMyPool);
         return conn;
     }

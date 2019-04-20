@@ -15,13 +15,16 @@ public class NewMyPool implements InvocationHandler {
     private Connection conn;
     private LinkedList<Connection> conections;
 
-    private boolean status = true;
+    private  boolean status = true;
 
     public NewMyPool(Connection conn, LinkedList<Connection> conections) {
         this.conn = conn;
         this.conections = conections;
     }
 
+    public void setStatus(){
+        status=true;
+    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
