@@ -11,7 +11,7 @@ import java.sql.*;
 public class JdbcTest {
     public static void main(String[] args) throws SQLException, InterruptedException {
         // 测试连接池 以及等待超时功能能否正常发挥作用
-        fun1();
+        //fun1();
 
         // 解决一个对象可以反复回到连接池
         //fun2();
@@ -20,8 +20,9 @@ public class JdbcTest {
         //fun3();
 
         // 基本性能测试
-        //fun4();
-}
+        fun4();
+
+    }
 
     /**
      * 测试连接池是否可用
@@ -118,6 +119,7 @@ public class JdbcTest {
 
     public static void fun4() throws SQLException {
         String sql = "select * from studen where id=?";
+        long start = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
             Connection conn1 = JdbcUtil.getConnection();
             Connection conn2 = JdbcUtil.getConnection();
@@ -161,5 +163,6 @@ public class JdbcTest {
             JdbcUtil.close(conn4,ps4,rs4);
             JdbcUtil.close(conn5,ps5,rs5);
         }
+        System.out.println(System.currentTimeMillis()-start);
     }
 }

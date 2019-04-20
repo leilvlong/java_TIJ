@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 /*
-装饰者模式:
+装饰者模式实现连接池:
     1.有共同接口
     2.被装饰者作为装饰者的成员存在
     3.根据需求去实现方法由装饰者完成,不需要实现的则由被装饰成员完成

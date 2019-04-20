@@ -20,6 +20,8 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -62,9 +64,9 @@ public class ConnectionPool implements DataSource {
         }
     }
 
-    // 连接池容器
+/*    // 连接池容器
     private static LinkedList<Connection> conections = new LinkedList<>();
-
+    // 装饰者模式实现
     private ConnectionPool() throws SQLException {
         // 数据库连接池应当是单例模式
         for (int i = 0; i < Integer.parseInt(poolsize); i++) {
@@ -72,11 +74,23 @@ public class ConnectionPool implements DataSource {
             MyconnectionPool myConn = new MyconnectionPool(dConn, conections);
             conections.add(myConn);
         }
+    }*/
 
+    // 连接池容器
+    private static LinkedList<Connection> conections = new LinkedList<>();
+    // 动态代理实现
+    private ConnectionPool() throws SQLException {
+        // 数据库连接池应当是单例模式
+        for (int i = 0; i < Integer.parseInt(poolsize); i++) {
+            Connection conn = DriverManager.getConnection(url, username, password);
+            conections.add(conn);
+        }
     }
+
     // 返回单个实例
-    public static ConnectionPool getConectionPool() throws SQLException {
-        return new ConnectionPool();
+    private static ConnectionPool connectionPool = null;
+    public static synchronized ConnectionPool getConectionPool() throws SQLException {
+        return connectionPool==null ? connectionPool = new ConnectionPool(): connectionPool;
     }
 
     @Override
@@ -86,7 +100,7 @@ public class ConnectionPool implements DataSource {
             conn = conections.removeFirst();
             System.out.println("获取连接成功还剩余可连接数量: "+ conections.size());
         }else{
-            // 处理等待连接对象
+            // 处理等待连接对象 这里正常情况应该是开线程来做的
             long start = System.currentTimeMillis();
             while(true){
                 long end = System.currentTimeMillis();
@@ -108,8 +122,20 @@ public class ConnectionPool implements DataSource {
         if(conn instanceof MyconnectionPool){
             ((MyconnectionPool)conn).setStatus();
         }
+
+        return getConn(conn);
+    }
+
+    /**
+     *动态代理实现方法 返回连接
+     * @return
+     */
+    private  Connection getConn(Connection conn){
+        InvocationHandler newMyPool = new NewMyPool(conn, conections);
+        conn = (Connection) Proxy.newProxyInstance(NewMyPool.class.getClassLoader(), new Class[]{Connection.class}, newMyPool);
         return conn;
     }
+
 
     public static int getPoolsize(){
         return conections.size();
