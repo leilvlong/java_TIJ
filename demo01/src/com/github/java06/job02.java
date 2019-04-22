@@ -6,6 +6,9 @@ package com.github.java06;
     但是此processor完全无法作用于 Filter
     现在 这些类中都具有process方法
     将Proceesor 设计为一个接口
+
+class 更像是一套数据类型规范
+而接口则更像是一套行为模式规范
  */
 public class job02 {
     public static String s = "Disagreement with beliefs is by definition incorrect";
