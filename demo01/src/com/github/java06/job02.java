@@ -1,49 +1,62 @@
 package com.github.java06;
 /*
 策略设计模式之二:
-    完全解耦
-    job01 与job02并无任何差别
-    但是此processor完全无法作用于 Filter
-    现在 这些类中都具有process方法
-    将Proceesor 设计为一个接口
+    Filter 与 Processor 具有相同的行为 process
+    但Filter 并非继承自 processor 因此不能使用Apply的process方法
+    如果将processor类设计为一个接口 让Filter实现它
+    或者是其它的方式
 
 class 更像是一套数据类型规范
 而接口则更像是一套行为模式规范
+    接收参数时可以决定:
+        接收怎样的数据类型
+        接收怎样的行为模式
+
  */
-public class job02 {
-    public static String s = "Disagreement with beliefs is by definition incorrect";
 
+public class job02{
     public static void main(String[] args) {
-        processor(new Upcase(),s);
-        processor(new Downcase(),s);
-        processor(new Splitter(),s);
-        processor(new Filter(),new Waveform());
-    }
+        //Waveform wf = new Waveform();
 
-    public static void processor(Processor p, Object s){
-        System.out.println("SimpleName: "+p.name());
-        System.out.println(p.process(s));
     }
 }
+
 
 class Waveform{
     private static long counter = 0;
-    private long id = counter++;
+    private final long id = counter++;
 
     @Override
     public String toString() {
-        return "Wavefor ID: " + id;
+        return "Waveform" +
+                "id=" + id
+                ;
     }
 }
 
-class Filter implements Processor{
+
+class Filter{
     public String name(){
         return getClass().getSimpleName();
     }
 
-    @Override
-    public Object process(Object input) {
+    public Waveform process(Waveform input){
         return input;
     }
 }
 
+
+class Lowpass extends Filter{
+    @Override
+    public Waveform process(Waveform input){
+        return input;
+    }
+}
+
+
+class Highpass extends Filter{
+    @Override
+    public Waveform process(Waveform input){
+        return input;
+    }
+}
