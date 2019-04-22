@@ -8,7 +8,7 @@ import java.util.Scanner;
 流的简单练习
  */
 public class job03 {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         // fun1();
         //fun2();
         //fun3();
@@ -16,11 +16,11 @@ public class job03 {
         //fun5();
         //fun6();
         //fun7();
-        //fun8();
+        fun8();
         //fun9('a');
         //fun10();
         //fun();
-        fun11();
+        //fun11();
     }
 
     public static void fun() throws  IOException{
@@ -105,19 +105,23 @@ public class job03 {
         fil.close();
     }
 
-    public static void fun8() throws IOException{
+    public static void fun8() throws IOException, InterruptedException {
+        //当一个方法内对properties文件进行操作时在覆写时一定要注意先load再创建写对象
         Properties pro = new Properties();
         FileReader fil = new FileReader("demo01\\files\\config.properties");
-        FileWriter fwl= new FileWriter("demo01\\files\\config.properties",true);
         pro.load(fil);
+        FileWriter fwl= new FileWriter("demo01\\files\\config.properties");
         for (String str : pro.stringPropertyNames()) {
             if(str.equals("lisi")){
                 pro.setProperty(str,"100");
-                pro.store(fwl,"??");
             }
         }
+        pro.store(fwl,"修改age");
         fwl.close();
         fil.close();
+        //Thread.sleep(100000000);
+
+
     }
 
     public static void fun9(char cha) throws IOException {
