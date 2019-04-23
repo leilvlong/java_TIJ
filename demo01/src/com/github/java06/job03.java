@@ -7,6 +7,8 @@ import java.util.Arrays;
     代理与适配器模式的使用
 
 Filter尽管没有实现 Processor接口 ,通过适配器与代理依然使用了Apply.process方法
+class 更像是一套数据类型规范(自定义数据类型)  is-a
+而接口则更像是一套行为模式规范(多个对象都具有类似的行为)  is-like-a
  */
 public class job03{
     public static void main(String[] args) {
