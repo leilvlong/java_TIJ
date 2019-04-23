@@ -7,7 +7,7 @@ java 类只允许单继承 接口允许多继承
 因为继承中允许协变返回类型(同一继承体系之间向上转型)
 方法的不同更多是以参数来区分此时便涉及到:
     方法重写的同时方法也重载了
-    job05将证明这种问题
+    job05将证明这种问题.
  */
 public class job04 {
     public static void main(String[] args) {
