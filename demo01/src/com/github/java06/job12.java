@@ -35,8 +35,6 @@ public class job12 {
 
 class Scan{
 
-
-
     private ReadableClass rc;
     private boolean status = true;
 
@@ -51,7 +49,7 @@ class Scan{
     //简单模仿 Scanner hasNext
     public boolean hasNext() {
         if(allocate.array()[0] == '\0'){
-            return  false;
+            status =   false;
         }
         return  status;
     }
