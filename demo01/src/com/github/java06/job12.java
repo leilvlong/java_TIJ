@@ -34,35 +34,51 @@ public class job12 {
 
 
 class Scan{
+
+
+
     private ReadableClass rc;
-    public Scan(ReadableClass rc) {
+    private boolean status = true;
+
+    private CharBuffer allocate = CharBuffer.allocate(1024);
+
+    // 构造时先加载一次 避免输出空行
+    Scan(ReadableClass rc) {
         this.rc = rc;
-    }
-
-
-
-    public boolean hasNext() throws NoSuchFieldException, IllegalAccessException {
-        // 找不到解决的思路 暴力解决 模仿 Scannner 的 hasnext
-        Field count = rc.getClass().getDeclaredField("count");
-        count.setAccessible(true);
-        int count1 = (int) count.get(rc);
-        boolean flag = true;
-        if(count1 == 0){
-            flag = false;
-        }
-        return  flag;
-    }
-
-    public String netx(){
-        // 模仿Scanner 的next
-        CharBuffer allocate = CharBuffer.allocate(1024);
         rc.read(allocate);
+    }
+
+    //简单模仿 Scanner hasNext
+    public boolean hasNext() {
+        if(allocate.array()[0] == '\0'){
+            return  false;
+        }
+        return  status;
+    }
+
+    // 模仿Scanner next
+    public String netx(){
+        // 因为构造时已经加载一次了 所以直接转换然后清除缓冲区
         char[] array = allocate.array();
         String s = new String(array, 0, array.length);
+        allocate.clear();
 
+        //重新加载供hasNext判断是否还有内容 当再次调用此方法时直接将缓冲区内容转为字符串
+        // 重复此流程 直到 rc.read方法使用次数用完为此
+        int read = rc.read(allocate);
+        if(read == -1){
+            status = false;
+        }
+        // 返回缓冲区操作得到的字符串对象
         return s;
     }
+
+
 }
+
+
+
+
 
 
 
