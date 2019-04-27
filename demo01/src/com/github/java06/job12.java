@@ -34,10 +34,8 @@ public class job12 {
 
 
 class Scan{
-
     private ReadableClass rc;
     private boolean status = true;
-
     private CharBuffer allocate = CharBuffer.allocate(1024);
 
     // 构造时先加载一次 避免输出空行
