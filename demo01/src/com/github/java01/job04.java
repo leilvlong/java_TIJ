@@ -5,28 +5,15 @@ import java.util.Random;
 
 
 /*
-        Array04 array04 = new Array04();
-        AddArray04 addArray04 = new AddArray04(array04);
-        RemoveArray04 remove1 = new RemoveArray04(array04);
-        addArray04.start();
-        new Thread(remove1).start();
-        new Thread(remove1).start();
-        new Thread(remove1).start();
-        new Thread(remove1).start();
-使用以上方式去开启多线程协作时会出现一个巨大的问题:
-    信息不对称:
-        当容器装满数据给四条线程时,四条线程在执行时获取的容器长度是一致的
-        (因为同步代码块的原因 执行里面的代码需要一定的时间虽然肉眼不可察觉
-        在执行同步代码块时另外三条线程已经获取了容器的信息)
-        当其中一条线程执行并修改了容器后,另外三条线程中的某条进入同步代码块执行
-        但是并未收到容器已被修改的消息 对容器的操作就会出现问题而导致抛出异常
-        就好像收到一条诡异的来自2017年8月的短信 告诉你2017年双色球号码是多少
-        买了必中,然后你信了 去买了 天知道会发生什么
-单生产多消费看来我还是想的太简单了 呵! 呵! 呵!
+线程间资源共享与第三方容器:
+    多线程实现资源共享需要第三方媒介
+
  */
 public class job04 {
     public static void main(String[] args) {
-
+        Array04 array04 = new Array04();
+        new AddArray04(array04).start();
+        new RemoveArray04(array04).start();
 
     }
 }
@@ -60,7 +47,7 @@ class AddArray04 extends Thread{
                     int num = r.nextInt(100) + 1;
                     array04.intList.add(num);
                 }
-                System.out.println(array04.intList);
+                System.out.println(Thread.currentThread().getName()+ "元素列表为: "+ array04.intList);
                 array04.notify();
             }
         }
@@ -89,11 +76,12 @@ class RemoveArray04 extends Thread{
                     }
                 }
 
-                ArrayList<Integer> intList = array04.intList;
-                Integer remove = intList.remove(r.nextInt(intList.size()));
+                //ArrayList<Integer> intList = array04.intList;
+                //Integer remove = intList.remove(r.nextInt(intList.size()));
+                Integer remove = array04.intList.remove(0);
                 System.out.println(Thread.currentThread().getName()+"删除了元素: "+remove);
 
-                if(intList.isEmpty()){
+                if(array04.intList.isEmpty()){
                     array04.notify();
                 }
 
