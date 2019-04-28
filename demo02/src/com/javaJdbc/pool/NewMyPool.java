@@ -30,36 +30,48 @@ public class NewMyPool implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         String methodName = method.getName();
-        if("createStatement".equals(methodName)){
-            Statement obj = createStatement();
-            return obj;
+        /*if("createStatement".equals(methodName)){
+            return createStatement();
         }else if("prepareStatement".equals(methodName)){
-            PreparedStatement obj = prepareStatement((String) args[0]);
-            return obj;
+            return prepareStatement((String) args[0]);
         }else if("close".equals(methodName)){
             close();
             return null;
         }else{
            return method.invoke(conn, args);
+        }*/
 
+        /*Method[] sqlMethods = getClass().getDeclaredMethods();
+        for (Method sqlMethod : sqlMethods) {
+            if(sqlMethod.getName().equals(methodName)){
+                return sqlMethod.invoke(this, args);
+            }
+        }*/
+
+        try{
+            return getClass().getDeclaredMethod(methodName).invoke(this, args);
+        }catch (Exception e){
+            return method.invoke(conn,args);
         }
+
+
     }
 
-    public Statement createStatement() throws SQLException {
-        if(status == false){
+    private Statement createStatement() throws SQLException {
+        if(!status){
             throw new SQLException( " You can't operate on a closed Connection!!!");
         }
         return conn.createStatement();
     }
 
-    public PreparedStatement prepareStatement(String sql) throws SQLException {
-        if(status == false){
+    private PreparedStatement prepareStatement(String sql) throws SQLException {
+        if(!status){
             throw new SQLException( " You can't operate on a closed Connection!!!");
         }
         return conn.prepareStatement(sql);
     }
 
-    public void close() throws SQLException {
+    private void close() throws SQLException {
         if(conections.contains(this.conn)){
             throw new SQLException();
         }else{
@@ -69,3 +81,5 @@ public class NewMyPool implements InvocationHandler {
     }
 
 }
+
+
