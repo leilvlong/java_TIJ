@@ -1,6 +1,5 @@
 package com.javaJdbc.pool;
 
-import jdk.swing.interop.SwingInterOpUtils;
 
 import java.sql.*;
 /*
@@ -106,6 +105,7 @@ public class JdbcTest {
         ResultSet rs = ps.executeQuery();
         rs.next();
         System.out.println("学生名字为: "+ rs.getString("name"));
+
         JdbcUtil.close(conn,ps,rs);
 
         // 连接对象虽然close后回到连接池容器中,但连接对象依然存在,如何处理连接对象成为一个问题
@@ -127,11 +127,13 @@ public class JdbcTest {
             Connection conn4 = JdbcUtil.getConnection();
             Connection conn5 = JdbcUtil.getConnection();
 
+            conn1.createBlob();
+
             PreparedStatement ps1 = conn1.prepareStatement(sql);
-            PreparedStatement ps2 = conn1.prepareStatement(sql);
-            PreparedStatement ps3 = conn1.prepareStatement(sql);
-            PreparedStatement ps4 = conn1.prepareStatement(sql);
-            PreparedStatement ps5 = conn1.prepareStatement(sql);
+            PreparedStatement ps2 = conn2.prepareStatement(sql);
+            PreparedStatement ps3 = conn3.prepareStatement(sql);
+            PreparedStatement ps4 = conn4.prepareStatement(sql);
+            PreparedStatement ps5 = conn5.prepareStatement(sql);
 
             ps1.setInt(1,1);
             ps2.setInt(1,2);
