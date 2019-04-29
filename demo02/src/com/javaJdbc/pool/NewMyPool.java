@@ -29,8 +29,10 @@ public class NewMyPool implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+
+        /*
         String methodName = method.getName();
-        /*if("createStatement".equals(methodName)){
+        if("createStatement".equals(methodName)){
             return createStatement();
         }else if("prepareStatement".equals(methodName)){
             return prepareStatement((String) args[0]);
@@ -40,18 +42,28 @@ public class NewMyPool implements InvocationHandler {
         }else{
            return method.invoke(conn, args);
         }*/
-
-        /*Method[] sqlMethods = getClass().getDeclaredMethods();
+        /*String methodName = method.getName();
+        Method[] sqlMethods = getClass().getDeclaredMethods();
         for (Method sqlMethod : sqlMethods) {
             if(sqlMethod.getName().equals(methodName)){
+
                 return sqlMethod.invoke(this, args);
             }
-        }*/
+        }
+        System.out.println("没有执行");
+        return method.invoke(conn,args);*/
 
+        String methodName = method.getName();
+        Class<?>[] parameterTypes = method.getParameterTypes();
         try{
-            return getClass().getDeclaredMethod(methodName).invoke(this, args);
-        }catch (Exception e){
+
+            Object invoke = this.getClass().getDeclaredMethod(methodName, parameterTypes).invoke(this, args);
+            return invoke;
+        }catch (NoSuchMethodException e){
+            System.out.println("非代理方法");
             return method.invoke(conn,args);
+        }catch (Exception e){
+            throw new SQLException("代理异常");
         }
 
 
