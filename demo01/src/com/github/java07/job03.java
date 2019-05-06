@@ -1,4 +1,8 @@
 package com.github.java07;
+
+import java.util.Optional;
+import java.util.Random;
+
 /*
 内部类可以访问外部类的所有成员:
     1.不同于job02中必须以 外部类.内部类的方式获取对象引用
@@ -42,8 +46,9 @@ private 内部类提供行为:
 事实上无法解释的不能理解的都归咎于解释器来完成的是最心安理得的~!!
  */
 public class job03 {
+
     public static void main(String[] args) {
-        Sequence sequence = new Sequence(10);
+        /*Sequence sequence = new Sequence(10);
         for (int i = 0; i < 10; i++) {
             sequence.add(i);
         }
@@ -52,7 +57,31 @@ public class job03 {
         while (! selector.end()){
             System.out.println(selector.current());
             selector.next();
+        }*/
+
+/*        Random r = new Random();
+
+        Sequence sequence = new Sequence(10);
+        for (int i = 0; i < 10; i++) {
+            char[] chars = {
+                    (char) (r.nextInt(26)+97),
+                    (char) (r.nextInt(26)+97),
+                    (char) (r.nextInt(26)+97),
+                    (char) (r.nextInt(26)+97),
+                    (char) (r.nextInt(26)+97),
+            };
+            sequence.add(new ToString(new String(chars,0,chars.length)));
         }
+
+        Selector selector = sequence.selector();
+        while (! selector.end()){
+            System.out.println(selector.current());
+            selector.next();
+        }*/
+
+        Outer outer = new Outer("you are my ?");
+        GetObject object = outer.getObject();
+        System.out.println(object.get());
 
     }
 }
@@ -107,3 +136,42 @@ class Sequence{
         return new SequenceSelector();
     }
 }
+
+class ToString{
+    private String str;
+
+    public ToString(String str) {
+        this.str = str;
+    }
+
+    @Override
+    public String toString() {
+        return "ToString{" +
+                "str='" + str + '\'' +
+                '}';
+    }
+}
+
+
+interface GetObject{
+    Object get();
+}
+
+class Outer{
+    private String str;
+
+    public Outer(String str) {
+        this.str = str;
+    }
+
+    class Inner implements GetObject{
+        public Object get(){
+            return str;
+        }
+    }
+
+    public GetObject getObject(){
+        return new Inner();
+    }
+}
+
