@@ -14,6 +14,9 @@ package com.github.java07;
     该域会随着对象的加载而加载,利用这种特性
     但是无法做到重载
     }
+
+匿名内部类:
+    与正规的继承相比,虽然可以实现接口,扩展类,但不能两者兼备,且只能实现单个接口
  */
 public class job08 {
     public static void main(String[] args) {
