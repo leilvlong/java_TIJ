@@ -39,8 +39,11 @@ package com.github.java07;
     定义在方法中或语句作用域内
         外部类名$升序编号(id) + 内部类名
         与修饰符无关
-值得注意的是并没有找到任何有关匿名内部类的字节码文件:
-    是因为匿名且只被使用一次?
+值得注意的匿名内部类的字节码文件:
+    定义在job06中的两个线程的匿名内部类的文件字节码:
+        只以序号标识
+    out\production\demo01\com\github\java07\job06$1.class
+    out\production\demo01\com\github\java07\job06$2.class
 */
 
 import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
@@ -82,7 +85,7 @@ public class job06 {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("hahaha");
+                System.out.println("hahahaha");
             }
         }
         ).start();
@@ -90,7 +93,7 @@ public class job06 {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("hehehe");
+                System.out.println("hehehehe");
             }
         }
         ).start();
