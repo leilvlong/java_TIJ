@@ -1,6 +1,6 @@
 package com.github.java07;
 
-import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
+
 
 /*
 在外部类Parcel1中:
@@ -22,9 +22,7 @@ import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
    5.一种奇怪的现象
    内部类被设定为私有的成员可以直接在本类中被 对象引用.私有成员 的方式获取值
    而在非本类中只能通过类似getter 与setter的方法获取
-   推测:
-    内部类属于外部类对象的一部分
-    内部类与外部类有直接的联系关系
+   内部类与外部类必然有某种直接的联系关系
  */
 public class job02 {
     public static void main(String[] args) {
@@ -33,6 +31,12 @@ public class job02 {
 
         Parcel2.Contens p2Contens = parcel2.toContens();
         Parcel2.Destination p2Destination = parcel2.toDestination("Destination");
+        Parcel2.StaticContens staticContens = parcel2.getStaticContens();
+
+
+        System.out.println(p2Contens.value());
+        System.out.println(p2Destination.readLabel());
+        System.out.println(staticContens.value());
 
         /*
         通过静态方法获取比较
@@ -112,6 +116,19 @@ class Parcel2{
     public static Destination getDestination(String lable){
         return new Destination(lable);
     }*/
+
+
+    static class StaticContens{
+        private int i = 12;
+
+        public int value(){
+            return i;
+        }
+    }
+
+    public StaticContens getStaticContens(){
+        return new StaticContens();
+    }
 
     public void ship(String label){
         Contens c = new Contens();
