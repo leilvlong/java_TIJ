@@ -19,8 +19,8 @@ public class JedisUtilTest {
 
     public static void main(String[] args) throws IllegalAccessException, NoSuchMethodException, InstantiationException, InvocationTargetException {
         //fun1();
-        //fun2();
-        fun3();
+        fun2();
+        //fun3();
     }
 
 /*    //将javaBean对象转为Json字符串对象存入redis 再取出转为javaBean对象
@@ -55,7 +55,7 @@ public class JedisUtilTest {
 
     }*/
 
-/*    // 将多个对象存入到redis里面
+    // 将多个对象存入到redis里面
     public static void fun2() throws IllegalAccessException {
         StudenBean stu1 = new StudenBean(1, "tom1", "man");
         StudenBean stu2 = new StudenBean(2, "tom2", "man");
@@ -65,16 +65,16 @@ public class JedisUtilTest {
         stus.add(stu2);
         stus.add(stu3);
 
-        *//*
-        String jsonStus = gs.toJson(stus);
+
+        /*String jsonStus = gs.toJson(stus);
         jcpu.set("stus",jsonStus);
         String stusStr = jcpu.get("stus");
         Type stu = new TypeToken<List<StudenBean>>(){}.getType();
         List<StudenBean> o = gs.fromJson(stusStr, stu);
-        System.out.println(o);
-        *//*
+        System.out.println(o);*/
 
-        List< Map<String,Object>> linkStus = new LinkedList<>();
+
+        List<String> linkStus = new LinkedList<>();
         for (StudenBean stu : stus) {
             Map<String,Object> stuMap = new LinkedHashMap<>();
             Field[] fields = stu.getClass().getDeclaredFields();
@@ -82,12 +82,15 @@ public class JedisUtilTest {
                 field.setAccessible(true);
                 String fileName = field.getName();
                 Object o = field.get(stu);
-                stuMap.put(fileName,o);
-                System.out.println();
+                stuMap.put("\""+fileName+"\"","\""+o+"\"");
             }
-            linkStus.add(stuMap);
+            String s = stuMap.toString();
+            String replace = s.replace("=", ":");
+            linkStus.add(replace);
         }
+
         String s = linkStus.toString();
+        System.out.println(s);
         jcpu.set("stus",s);
         String stusStr = jcpu.get("stus");
         Type stu = new TypeToken<List<StudenBean>>(){}.getType();
@@ -95,7 +98,7 @@ public class JedisUtilTest {
         System.out.println(o);
 
         jcpu.close();
-    }*/
+    }
 
     //尝试解析json
     public static void fun3() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
