@@ -28,3 +28,50 @@
            4.3.3 方法参数
            若调用4.3.1的代理对象的方法会重走整个4.3的流程而无限递归
 
+5. 承接委托类 以及动态代理使用实例 以方便提供理解
+public class job19 {
+    public static void main(String[] args) throws Throwable {
+        // 承接委托对象使用
+        ISA isa = new ISA();
+        Prxo prxo = new Prxo(isa);
+        prxo.invoke(isa,isa.getClass().getMethod("fun"),null);
+
+        //动态代理对象使用
+        ThisA o = (ThisA) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisA.class}, prxo);
+        o.fun();
+
+    }
+}
+
+interface ThisA{
+    void fun();
+}
+
+class ISA implements ThisA{
+
+    @Override
+    public void fun() {
+        System.out.println("fun");
+    }
+}
+
+
+class Prxo implements InvocationHandler{
+    private Object obj;
+
+    public Prxo(Object obj) {
+        this.obj = obj;
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        //获取类名
+        System.out.println(proxy.getClass().getName());
+
+        //若使用proxy的任何方法都会无限递归 因为这个对象就是动态代理对象,原因已解释过
+
+        //method对象使用
+        method.invoke(obj,args);
+        return null;
+    }
+}
