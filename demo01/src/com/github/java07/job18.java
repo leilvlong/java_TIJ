@@ -34,11 +34,21 @@ import java.util.List;
 
 
  */
-public class job18  {
+
+
+public class job18{
     public static void main(String[] args) {
+        GreenHouseController.main(new String[]{"2000"});
+    }
+}
 
 
 
+ class GreenHouseController {
+     /**
+      * 一个可执行的任务初始化静态方法
+      */
+    public static void main(String[] args) {
         GreenhouseControls gc = new GreenhouseControls();
         gc.addEvent(gc.new Bell(900));
         Event[] eventList = {
@@ -52,11 +62,14 @@ public class job18  {
 
         gc.addEvent(gc.new Restart(2000,eventList));
 
-
-        gc.addEvent(new GreenhouseControls.Terminate((0)));
+        if (args.length==1){
+            gc.addEvent(new GreenhouseControls.Terminate(Integer.parseInt(args[0])));
+        }
         gc.run();
     }
 }
+
+
 
 
 /**
