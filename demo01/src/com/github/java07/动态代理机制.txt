@@ -105,8 +105,29 @@ class MyProxy implements ThisA, InvocationHandler{
         即在执行这个方法时捕获该对象的这三部分,该场景暂时模拟不出来
         因为这是javaJVM做的事,很难猜测他对这些方法是怎么做的
 
+    }
 
+    硬要做的话可以通过反射获取handler中的成员委托者对象来做到
+    将以上代码注释掉,模仿手动捕获执行方法时的三部分
+    不要在意硬编码,只是为了举例书写方便,反射提供了大量API动态获取这些硬编码属性
 
+    @Override
+    public void fun(){
+
+     }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+        // 获取承接委托对象中的那个委托者对象
+        Field obj = handler.getClass().getDeclaredField("obj");
+        obj.setAccessible(true);
+        Object o = obj.get(handler);
+        //将其转型为需要执行的对象类型
+        ThisA o1 = (ThisA) o;
+        //执行方法并返回
+        Object fun = handler.invoke(this, o1.getClass().getMethod("fun"), args);
+        return fun;
     }
 }
 
