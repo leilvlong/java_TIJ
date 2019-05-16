@@ -93,7 +93,7 @@ class MyProxy implements ThisA, InvocationHandler{
     针对该方法着重说明,这是关键所在
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return handler.invoke;
+        return handler.invoke(proxy,method,args);
 
         1. 调用对象方法分为三部分:
         obj.method(parameters)
