@@ -75,3 +75,39 @@ class Prxo implements InvocationHandler{
         return null;
     }
 }
+
+6. 补充说明:
+Proxy.newProxyInstance实际做的事实创建一个类似下面类模板这样的对象:
+class MyProxy implements ThisA, InvocationHandler{
+    private InvocationHandler handler;
+
+    public MyProxy(InvocationHandler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public void fun(){
+    }
+
+
+    针对该方法着重说明,这是关键所在
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        return handler.invoke;
+
+        1. 调用对象方法分为三部分:
+        obj.method(parameters)
+        2. JVM捕获你所调用的动态代理对象($Proxy0)的这三部分
+        obj  method  parameters
+        3. 并动态的将该对象转型为InvocationHandler调用invoke 将这三部分传入invoke方法中执行
+
+        由于无法模拟第2部分:
+        即在执行这个方法时捕获该对象的这三部分,该场景暂时模拟不出来
+        因为这是javaJVM做的事,很难猜测他对这些方法是怎么做的
+
+
+
+    }
+}
+
+
