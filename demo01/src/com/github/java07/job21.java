@@ -1,0 +1,79 @@
+package com.github.java07;
+
+public class job21 {
+    public static void main(String[] args) {
+        StaticClass1 staticClass11 = StaticClass1.getStaticClass1();
+        StaticClass1 staticClass12 = StaticClass1.getStaticClass1();
+        System.out.println(staticClass11==staticClass12);
+
+        StaticClass2 staticClass21 = StaticClass2.getStaticClass2();
+        StaticClass2 staticClass22 = StaticClass2.getStaticClass2();
+        System.out.println(staticClass21==staticClass22);
+
+        StaticClass3 staticClass31 = StaticClass3.getStaticClass3();
+        StaticClass3 staticClass32 = StaticClass3.getStaticClass3();
+        System.out.println(staticClass31==staticClass32);
+
+        StaticClass4 staticClass41 = StaticClass4.getStaticClass4();
+        StaticClass4 staticClass42 = StaticClass4.getStaticClass4();
+        System.out.println(staticClass41==staticClass42);
+    }
+}
+
+//单例模式1 线程安全只会加载一次,只要类被访问就会被加载
+class StaticClass1{
+    private static StaticClass1 staticClass1 = new StaticClass1();
+
+    private StaticClass1(){};
+
+    public static StaticClass1 getStaticClass1(){
+        return staticClass1;
+    }
+}
+
+//单例模式2 线程安全,访问get方法才会被加载 但是每次都会上锁效率低
+class StaticClass2{
+    private static StaticClass2 staticClass2;
+
+    private StaticClass2(){}
+
+    public static synchronized StaticClass2 getStaticClass2(){
+        if(staticClass2 ==null){
+            staticClass2 = new StaticClass2();
+        }
+        return staticClass2;
+    }
+}
+
+//单例模式3 线程安全,访问get方法才会被加载 只会上一次锁
+class StaticClass3{
+    private static StaticClass3 staticClass3;
+
+    private StaticClass3(){}
+
+    public static StaticClass3 getStaticClass3(){
+        if(staticClass3 == null){
+            synchronized (StaticClass3.class){
+                if(staticClass3 == null){
+                    staticClass3 = new StaticClass3();
+                }
+            }
+        }
+        return staticClass3;
+    }
+}
+
+
+//单例模式4 线程安全,被访问才会被加载,利用嵌套类的访问权限特性
+class StaticClass4{
+    private StaticClass4(){}
+
+    private static class InnerClass{
+         private static StaticClass4 staticClass4 = new StaticClass4();
+    }
+
+    public static StaticClass4 getStaticClass4(){
+
+        return InnerClass.staticClass4;
+    }
+}
