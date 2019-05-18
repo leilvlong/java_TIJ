@@ -40,6 +40,8 @@ public class job19 {
         ThisA o = (ThisA) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisA.class}, prxo);
         o.fun();
 
+        ThisA myProxy = new MyProxy(prxo);
+        myProxy.fun();
     }
 }
 
