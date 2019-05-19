@@ -1,79 +1,83 @@
 package com.github.java07;
+/*
+局部类与匿名内部类:
+    定义在各种作用域中,本质不会发生变化
+    局部类并不能称之为外部类的一部分了,因此不能有访问说明符
+    但是可以访问当前代码块的常量以及外围类的所有成员
 
+他们的使用功能是一样的:
+    1.局部内部类可以有真正意义上的构造器,而匿名内部类没有
+    2.局部内部类可以反复使用(指创建多个对象)
+ 这种本质python的函数闭包很相似,外部可以为内部提供环境
+ 但不同的是java以类为单位:
+    每个类都是单独的实体,都可以有自己的行为与数据
+    一个外部类可以为多个内部类以及局部内提供环境,
+    可以通过多个内部类实现多继承,而不用担心菱形继承
+
+
+
+
+
+
+ */
 public class job21 {
     public static void main(String[] args) {
-        StaticClass1 staticClass11 = StaticClass1.getStaticClass1();
-        StaticClass1 staticClass12 = StaticClass1.getStaticClass1();
-        System.out.println(staticClass11==staticClass12);
+        LocalInnerClass local = new LocalInnerClass();
 
-        StaticClass2 staticClass21 = StaticClass2.getStaticClass2();
-        StaticClass2 staticClass22 = StaticClass2.getStaticClass2();
-        System.out.println(staticClass21==staticClass22);
-
-        StaticClass3 staticClass31 = StaticClass3.getStaticClass3();
-        StaticClass3 staticClass32 = StaticClass3.getStaticClass3();
-        System.out.println(staticClass31==staticClass32);
-
-        StaticClass4 staticClass41 = StaticClass4.getStaticClass4();
-        StaticClass4 staticClass42 = StaticClass4.getStaticClass4();
-        System.out.println(staticClass41==staticClass42);
-    }
-}
-
-//单例模式1 线程安全只会加载一次,只要类被访问就会被加载
-class StaticClass1{
-    private static StaticClass1 staticClass1 = new StaticClass1();
-
-    private StaticClass1(){};
-
-    public static StaticClass1 getStaticClass1(){
-        return staticClass1;
-    }
-}
-
-//单例模式2 线程安全,访问get方法才会被加载 但是每次都会上锁效率低
-class StaticClass2{
-    private static StaticClass2 staticClass2;
-
-    private StaticClass2(){}
-
-    public static synchronized StaticClass2 getStaticClass2(){
-        if(staticClass2 ==null){
-            staticClass2 = new StaticClass2();
+        Counter
+                c1 = local.getCounter("Local inner: "),
+                c2 = local.getCounter2("Anonymous inner:");
+        for (int i = 0; i < 5; i++) {
+            System.out.println(c1.next());
         }
-        return staticClass2;
+
+        for (int i = 0; i < 5; i++) {
+            System.out.println(c2.next());
+        }
+
     }
 }
 
-//单例模式3 线程安全,访问get方法才会被加载 只会上一次锁
-class StaticClass3{
-    private static StaticClass3 staticClass3;
 
-    private StaticClass3(){}
+interface Counter{
+    int next();
+}
 
-    public static StaticClass3 getStaticClass3(){
-        if(staticClass3 == null){
-            synchronized (StaticClass3.class){
-                if(staticClass3 == null){
-                    staticClass3 = new StaticClass3();
-                }
+
+class LocalInnerClass{
+    private int count = 0;
+
+    Counter getCounter(String name){
+        class LocalCounter implements Counter{
+
+            public LocalCounter() {
+                System.out.println("Class LocalCounter");
+            }
+
+            @Override
+            public int next() {
+                System.out.print(name);
+                return count++;
             }
         }
-        return staticClass3;
+
+
+        return new LocalCounter();
+    }
+
+    Counter getCounter2(String name){
+        return new Counter() {
+            {
+                System.out.println("Class Anonymous");
+            }
+
+            @Override
+            public int next() {
+                System.out.print(name);
+                return count++;
+            }
+        };
     }
 }
 
 
-//单例模式4 线程安全,被访问才会被加载,利用嵌套类的访问权限特性
-class StaticClass4{
-    private StaticClass4(){}
-
-    private static class InnerClass{
-         private static StaticClass4 staticClass4 = new StaticClass4();
-    }
-
-    public static StaticClass4 getStaticClass4(){
-
-        return InnerClass.staticClass4;
-    }
-}
