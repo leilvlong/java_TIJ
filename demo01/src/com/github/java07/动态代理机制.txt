@@ -29,108 +29,123 @@
            若调用4.3.1的代理对象的方法会重走整个4.3的流程而无限递归
 
 5. 承接委托类 以及动态代理使用实例 以方便提供理解
-public class job19 {
+
+
+public class job22 {
     public static void main(String[] args) throws Throwable {
         // 承接委托对象使用
-        ISA isa = new ISA();
-        Prxo prxo = new Prxo(isa);
-        prxo.invoke(isa,isa.getClass().getMethod("fun"),null);
+        MyInter myInter = new MyInter();
+        Prxo prxo = new Prxo(myInter);
+        /*System.out.println("动态代理对象名: "+ prxo.getClass().getName());
+        prxo.invoke(prxo,myInter.getClass().getMethod("fun"),null);*/
 
         //动态代理对象使用
-        ThisA o = (ThisA) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisA.class}, prxo);
-        o.fun();
+        ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
+        System.out.println("动态代理对象名: "+ handler.getClass().getName());
+        handler.fun();
 
-        ThisA myProxy = new MyProxy(prxo);
-        myProxy.fun();
+
+        MyPoxy myPoxy = new MyPoxy(prxo.getClass().getClassLoader(), prxo);
+        System.out.println("MyPoxy 对象名: "+ myPoxy.getClass().getName());
+        myPoxy.fun();
+
+
     }
 }
 
-interface ThisA{
+interface ThisInter{
     void fun();
 }
 
-class ISA implements ThisA{
+class MyInter implements ThisInter{
 
     @Override
     public void fun() {
-        System.out.println("fun");
+        System.out.println("Class MtInter method fun...");
     }
 }
 
 
-class Prxo implements InvocationHandler{
-    private Object obj;
+class Prxo implements InvocationHandler {
+    private MyInter obj;
 
-    public Prxo(Object obj) {
+    public Prxo(MyInter obj) {
         this.obj = obj;
     }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //获取类名
-        System.out.println(proxy.getClass().getName());
+        System.out.println("invoke方法参数对象名："+ proxy.getClass().getName());
 
         //若使用proxy的任何方法都会无限递归 因为这个对象就是动态代理对象,原因已解释过
+        System.out.println(proxy.toString());
+        /*
+        *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message
+        transform method call failed at JPLISAgent.c line: 844
+
+        以上是详细的异常信息,完全一致 只不过java的设计者把这个问题给抛出来了
+        而我水平不够，只能等JVM虚拟机给我抛出来
+        */
+
+
+
 
         //method对象使用
         method.invoke(obj,args);
         return null;
+
     }
 }
 
-6. 补充说明:
-Proxy.newProxyInstance实际做的事实创建一个类似下面类模板这样的对象:
-class MyProxy implements ThisA, InvocationHandler{
-    private InvocationHandler handler;
+class MyPoxy implements ThisInter{
+    ClassLoader classLoader;
+    InvocationHandler handler;
 
-    public MyProxy(InvocationHandler handler) {
+
+    public MyPoxy(ClassLoader classLoader, InvocationHandler handler) {
+        this.classLoader = classLoader;
         this.handler = handler;
     }
 
     @Override
-    public void fun(){
+    public void fun() {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        try {
+            Field obj = handler.getClass().getDeclaredField("obj");
+            obj.setAccessible(true);
+            Object o = obj.get(handler);
+            Method method = o.getClass().getMethod(methodName);
+            handler.invoke(this,method,null);
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-
-    针对该方法着重说明,这是关键所在
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        return handler.invoke(proxy,method,args);
-
-        1. 调用对象方法分为三部分:
-        obj.method(parameters)
-        2. JVM捕获你所调用的动态代理对象($Proxy0)的这三部分
-        obj  method  parameters
-        3. 并动态的将该对象转型为InvocationHandler调用invoke 将这三部分传入invoke方法中执行
-
-        由于无法模拟第2部分:
-        即在执行这个方法时捕获该对象的这三部分,该场景暂时模拟不出来
-        因为这是javaJVM做的事,很难猜测他对这些方法是怎么做的
-
-    }
-
-    硬要做的话可以通过反射获取handler中的成员委托者对象来做到
-    将以上代码注释掉,模仿手动捕获执行方法时的三部分
-    不要在意硬编码,只是为了举例书写方便,反射提供了大量API动态获取这些硬编码属性
-
-    @Override
-    public void fun(){
-
-     }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-        // 获取承接委托对象中的那个委托者对象
-        Field obj = handler.getClass().getDeclaredField("obj");
-        obj.setAccessible(true);
-        Object o = obj.get(handler);
-        //将其转型为需要执行的对象类型
-        ThisA o1 = (ThisA) o;
-        //执行方法并返回
-        Object fun = handler.invoke(this, o1.getClass().getMethod("fun"), args);
-        return fun;
+    public String toString() {
+        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+        try {
+            Field obj = handler.getClass().getDeclaredField("obj");
+            obj.setAccessible(true);
+            Object o = obj.get(handler);
+            Method method = o.getClass().getMethod(methodName);
+            Object invoke = handler.invoke(this, method, null);
+            return (String) invoke;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return null;
     }
 }
+
 
 
