@@ -1,11 +1,13 @@
 package com.github.java07;
 
-import java.lang.reflect.Field;
+import sun.misc.ProxyGenerator;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.io.FileOutputStream;
+import java.lang.reflect.*;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class job22 {
     public static void main(String[] args) throws Throwable {
@@ -17,16 +19,30 @@ public class job22 {
         prxo.invoke(prxo,myInter.getClass().getMethod("fun"),null);*/
 
         //动态代理对象使用
-        /*ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
+        ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
         System.out.println("动态代理对象名: "+ handler.getClass().getName());
-        handler.fun();*/
+        handler.fun();
+        /*
+        //获取动态代理对象的自字节码文件的方法
+        testPoxy();
+        */
 
         //自定义伪动态代理对象
         MyPoxy myPoxy = new MyPoxy( prxo);
-        System.out.println("MyPoxy 对象名: "+ myPoxy.getClass().getName());
+        System.out.println("自定义伪动态代理对象名: "+ myPoxy.getClass().getName());
         myPoxy.fun();
+    }
 
-
+    public static void testPoxy(){
+        byte[] bytes = ProxyGenerator.generateProxyClass("$Proxy", new Class[]{ThisInter.class});
+        try(
+                FileOutputStream fos =new FileOutputStream("demo01\\funs\\$Proxy.class");
+        ){
+            fos.write(bytes);
+            fos.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
 
@@ -57,13 +73,12 @@ class Prxo implements InvocationHandler {
         System.out.println("invoke方法参数对象名："+ proxy.getClass().getName());
 
         //若使用proxy的任何方法都会无限递归 因为这个对象就是动态代理对象,原因已解释过
-        System.out.println(proxy.toString());
+        //System.out.println(proxy.toString());
         /*
-        *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message
-        transform method call failed at JPLISAgent.c line: 844
-
-        以上是详细的异常信息,完全一致 只不过java的设计者把这个问题给抛出来了
-        而我水平不够，只能等JVM虚拟机给我抛出来
+        以上是详细的异常信息,完全一致 只不过java的设计者把这个问题给抛出来了而我水平不够，
+        只能等JVM虚拟机给我抛出来:
+            *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message
+            transform method call failed at JPLISAgent.c line: 844
         */
 
         method.invoke(obj,args);
@@ -110,6 +125,10 @@ class MyPoxy implements ThisInter{
         }
     }
 
+    /**
+     * Object 根类只重写这一个以做示例
+     * @return
+     */
     @Override
     public String toString() {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -124,5 +143,72 @@ class MyPoxy implements ThisInter{
             throwable.printStackTrace();
         }
         return null;
+    }
+}
+
+
+
+// 该类是通过反编译后获取的动态代理对象的文件,我将其内容复制过来了
+ final class $Proxy extends Proxy implements ThisInter {
+    private static Method m1;
+    private static Method m3;
+    private static Method m2;
+    private static Method m0;
+
+    public $Proxy(InvocationHandler var1)  {
+        super(var1);
+    }
+
+    public final boolean equals(Object var1)  {
+        try {
+            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
+        } catch (RuntimeException | Error var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final void fun() {
+        try {
+            super.h.invoke(this, m3, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final String toString() {
+        try {
+            return (String)super.h.invoke(this, m2, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final int hashCode()  {
+        try {
+            return (Integer)super.h.invoke(this, m0, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
+            m3 = Class.forName("com.github.java07.ThisInter").getMethod("fun");
+            m2 = Class.forName("java.lang.Object").getMethod("toString");
+            m0 = Class.forName("java.lang.Object").getMethod("hashCode");
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
     }
 }

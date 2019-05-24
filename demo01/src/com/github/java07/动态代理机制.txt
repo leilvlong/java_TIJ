@@ -17,7 +17,7 @@
 
 4. 使用该动态代理对象无论如何都会调用InvocationHandler接口的唯一方法invoke 原因如下:
     JVM生成动态代理对象时:
-        4.1. 使用参数条2.1承接委托类的类加载器加载与参数条件2.2中的接口组合了一个新类
+        4.1. 使用参数条2.3承接委托类与参数条件2.2中的接口组合了一个新类
         4.2. 返回引用时返回的是参数条件2中的接口
                 不然无法拥有正确的行为
         4.3. 使用时转型为InvocationHandler
@@ -28,7 +28,10 @@
            4.3.3 方法参数
            若调用4.3.1的代理对象的方法会重走整个4.3的流程而无限递归
 
-5. 承接委托类 以及动态代理使用实例 以方便提供理解
+5. 代码案例,分为三部分:
+    5.1 JVM生成的机动态代理对象使用
+    5.2 自定义伪动态代理对象使用
+    5.3 JVM生成的动态代理对象文件的反编译源码
 public class job22 {
     public static void main(String[] args) throws Throwable {
         // 承接委托对象使用
@@ -95,6 +98,14 @@ class Prxo implements InvocationHandler {
     }
 }
 
+
+/*
+自定义伪动态代理对象
+获取反编译的动态代理对象的字节码文件与我编写的伪动态代理文件比较
+尽管实现水平上存在较大的差距,
+证明了我的论证思路是合理正确的
+本文末尾有动态代理的反编码代码
+*/
 class MyPoxy implements ThisInter{
 
     InvocationHandler handler;
@@ -129,13 +140,15 @@ class MyPoxy implements ThisInter{
             Method method = o.getClass().getMethod(methodName);
             handler.invoke(this,method,null);
 
-
-
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
     }
 
+    /**
+     * Object 根类只重写这一个以做示例
+     * @return
+     */
     @Override
     public String toString() {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
@@ -154,3 +167,67 @@ class MyPoxy implements ThisInter{
 }
 
 
+// 该类是通过反编译后获取的动态代理对象的文件,我将其内容复制过来了
+ final class $Proxy extends Proxy implements ThisInter {
+    private static Method m1;
+    private static Method m3;
+    private static Method m2;
+    private static Method m0;
+
+    public $Proxy(InvocationHandler var1)  {
+        super(var1);
+    }
+
+    public final boolean equals(Object var1)  {
+        try {
+            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
+        } catch (RuntimeException | Error var3) {
+            throw var3;
+        } catch (Throwable var4) {
+            throw new UndeclaredThrowableException(var4);
+        }
+    }
+
+    public final void fun() {
+        try {
+            super.h.invoke(this, m3, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final String toString() {
+        try {
+            return (String)super.h.invoke(this, m2, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    public final int hashCode()  {
+        try {
+            return (Integer)super.h.invoke(this, m0, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+
+    static {
+        try {
+            m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
+            m3 = Class.forName("com.github.java07.ThisInter").getMethod("fun");
+            m2 = Class.forName("java.lang.Object").getMethod("toString");
+            m0 = Class.forName("java.lang.Object").getMethod("hashCode");
+        } catch (NoSuchMethodException var2) {
+            throw new NoSuchMethodError(var2.getMessage());
+        } catch (ClassNotFoundException var3) {
+            throw new NoClassDefFoundError(var3.getMessage());
+        }
+    }
+}
