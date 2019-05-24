@@ -1,13 +1,13 @@
 package com.github.java07;
 
 import sun.misc.ProxyGenerator;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.io.FileOutputStream;
-import java.lang.reflect.*;
-import java.util.Arrays;
+
 
 public class job22 {
     public static void main(String[] args) throws Throwable {
@@ -19,9 +19,10 @@ public class job22 {
         prxo.invoke(prxo,myInter.getClass().getMethod("fun"),null);*/
 
         //动态代理对象使用
-        ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
+        /*ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
         System.out.println("动态代理对象名: "+ handler.getClass().getName());
-        handler.fun();
+        handler.fun();*/
+
         /*
         //获取动态代理对象的自字节码文件的方法
         testPoxy();
@@ -33,11 +34,12 @@ public class job22 {
         myPoxy.fun();
     }
 
+    /**
+     * 该方法可用于反编译动态代理对象
+     */
     public static void testPoxy(){
         byte[] bytes = ProxyGenerator.generateProxyClass("$Proxy", new Class[]{ThisInter.class});
-        try(
-                FileOutputStream fos =new FileOutputStream("demo01\\funs\\$Proxy.class");
-        ){
+        try(FileOutputStream fos =new FileOutputStream("demo01\\funs\\$Proxy.class");){
             fos.write(bytes);
             fos.flush();
         }catch (Exception e){
@@ -90,36 +92,24 @@ class Prxo implements InvocationHandler {
 class MyPoxy implements ThisInter{
 
     InvocationHandler handler;
-    String fieldName ;
 
     public MyPoxy(InvocationHandler handler)  {
         this.handler = handler;
-
-        Class<?>[] interfaces = this.getClass().getInterfaces();
-        Field[] handlerFields = handler.getClass().getDeclaredFields();
-
-        for (Field handlerField : handlerFields) {
-            handlerField.setAccessible(true);
-            try{
-                Class<?>[] fieldInterface = handlerField.get(handler).getClass().getInterfaces();
-                if(Arrays.equals(interfaces,fieldInterface)){
-                    fieldName = handlerField.getName();
-                    break;
-                }
-            }catch (Exception e){
-            }
-        }
     }
 
     @Override
     public void fun() {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         try {
-            Field obj = handler.getClass().getDeclaredField(fieldName);
-            obj.setAccessible(true);
-            Object o = obj.get(handler);
-            Method method = o.getClass().getMethod(methodName);
-            handler.invoke(this,method,null);
+            Method method = null;
+            Class<?>[] interfaces = this.getClass().getInterfaces();
+            for (Class<?> anInterface : interfaces) {
+                try{
+                    method = anInterface.getMethod(methodName);
+                }catch (NoSuchMethodException e){
+                }
+            }
+            handler.invoke(this,method,new Object[]{});
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -133,12 +123,15 @@ class MyPoxy implements ThisInter{
     public String toString() {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         try {
-            Field obj = handler.getClass().getDeclaredField(fieldName);
-            obj.setAccessible(true);
-            Object o = obj.get(handler);
-            Method method = o.getClass().getMethod(methodName);
-            Object invoke = handler.invoke(this, method, null);
-            return (String) invoke;
+            Method method = null;
+            Class<?>[] interfaces = this.getClass().getInterfaces();
+            for (Class<?> anInterface : interfaces) {
+                try{
+                    method = anInterface.getMethod(methodName);
+                }catch (NoSuchMethodException e){
+                }
+            }
+            return (String) handler.invoke(this,method,new Object[]{});
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
