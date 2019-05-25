@@ -123,14 +123,7 @@ class MyPoxy implements ThisInter{
     public String toString() {
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         try {
-            Method method = null;
-            Class<?>[] interfaces = this.getClass().getInterfaces();
-            for (Class<?> anInterface : interfaces) {
-                try{
-                    method = anInterface.getMethod(methodName);
-                }catch (NoSuchMethodException e){
-                }
-            }
+            Method method = Object.class.getMethod(methodName);
             return (String) handler.invoke(this,method,new Object[]{});
         } catch (Throwable throwable) {
             throwable.printStackTrace();

@@ -161,23 +161,16 @@ class MyPoxy implements ThisInter{
      * @return
      */
     @Override
-    public String toString() {
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        try {
-            Method method = null;
-            Class<?>[] interfaces = this.getClass().getInterfaces();
-            for (Class<?> anInterface : interfaces) {
-                try{
-                    method = anInterface.getMethod(methodName);
-                }catch (NoSuchMethodException e){
-                }
+        public String toString() {
+            String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
+            try {
+                Method method = Object.class.getMethod(methodName);
+                return (String) handler.invoke(this,method,new Object[]{});
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
             }
-            return (String) handler.invoke(this,method,new Object[]{});
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            return null;
         }
-        return null;
-    }
 }
 
 
