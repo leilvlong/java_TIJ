@@ -8,11 +8,9 @@ public class job11 {
         // 给Ut 数组每个元素分配对象
         for (int i = 0; i < uts.length; i++) {
             uts[i] = new Ut(mt);
-        }
-        // 给Et 数组每个元素分配对象
-        for (int i = 0; i < uts.length; i++) {
             ets[i] = new Et(mt);
         }
+
         // 清除Ut  不会导致Mt被清除 因为计数还在
         for (Ut ut : uts) {
             ut.dispose();

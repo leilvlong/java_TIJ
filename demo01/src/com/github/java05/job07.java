@@ -1,4 +1,8 @@
 package com.github.java05;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /*
 一般来讲 java是不需要手动清理的 ,自带的垃圾清理机制已经足够强大 在继承中也是如此
 特殊情况:本地方法
@@ -18,7 +22,7 @@ package com.github.java05;
 
  */
 public class job07 {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         System.out.println("__________________构造行为__________________");
         Frog frog = new Frog();
         System.out.println("__________________清理行为__________________");
@@ -112,6 +116,5 @@ class Frog extends Amphibian{
         description.dispose();
         characteristic.dispose();
         super.dispose();
-        this.dispose();
     }
 }
