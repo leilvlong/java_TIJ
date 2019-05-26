@@ -1,7 +1,6 @@
 package com.github.job09;
 
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -46,4 +45,24 @@ class ErrorUtil{
                 append(e.getMessage() == null ? e.getClass().getName() : e.toString()).append("\n").toString();
         return errorMassage.getBytes();
     }
+
+    /**
+     *
+     * @param args
+     * @throws IOException
+     * 解析起来很简单
+     */
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("demo01\\funs\\error.txt")));
+        while (br.read() != -1) {
+            String s = br.readLine();
+            if (s.contains("MASSAGE")) {
+                System.out.println(s.replace("   ",""));
+            }
+        }
+        br.close();
+    }
 }
+
+
+
