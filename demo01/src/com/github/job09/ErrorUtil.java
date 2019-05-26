@@ -3,6 +3,7 @@ package com.github.job09;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 class ErrorUtil{
@@ -32,13 +33,19 @@ class ErrorUtil{
     private static byte[] getErrorMassage(Exception e){
         sb = new StringBuilder();
         StackTraceElement ste = e.getStackTrace()[0];
-        StringBuilder errorMassage = sb.append("errorMassage:\n    ")
-                .append("FileLocation: ").append(ste.getFileName()).append("\n    ").
-                append("ClassLocation: ").append(ste.getClassName()).append("\n    ").
-                append("MethodLocation: ").append(ste.getMethodName()).append("\n    ").
-                append("ErrorLineNumber: ").append(ste.getLineNumber()).append("\n    massage: ").
-                append(e.getMessage() == null? "": e.getMessage());
+        sb.append("errorMassage:\n    ").append("FileLocation: ");
 
-        return errorMassage.toString().getBytes();
+        String[] path = ste.getClassName().split("\\.");
+        for (int i = 0; i < path.length-1; i++) {
+            sb.append(path[i]).append("/");
+        }
+        String errorMassage = sb.append(ste.getFileName()).append("\n    ").
+                append("ClassName: ").append(path[path.length - 1]).append("\n    ").
+                append("MethodName: ").append(ste.getMethodName()).append("\n    ").
+                append("ErrorLineNumber: ").append(ste.getLineNumber()).append("\n    massage: ").
+                append(e.getMessage() == null ? e.getClass().getName() : e.toString()).append("\n").
+                append("-------------------------------------------------------------\n").toString();
+
+        return errorMassage.getBytes();
     }
 }
