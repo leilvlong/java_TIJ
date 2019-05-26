@@ -1,5 +1,9 @@
 package com.github.job09;
 
+/*
+当调用 (Exception) e.fillInStackTrace()后
+异常的信息与发生地随着发生了改变,通过日志可以观察
+ */
 public class job07 {
     public static void main(String[] args) {
         /*try{
