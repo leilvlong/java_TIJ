@@ -113,7 +113,7 @@ class DynamicProxy implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String str;
+        String str = null;
         if("print".equals(method.getName())){
             str = subject.print((String) args[0], (int) args[1]);
         }else{
