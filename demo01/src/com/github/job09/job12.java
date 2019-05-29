@@ -32,12 +32,12 @@ java的特性很难和作用域区分开来单独来解释
        而程序员处理力度又不够
 
 针对以上特性的解决方案建议:
-    不要嵌套使用try
+    不要嵌套使用try catch, 尤其是有try finally语句时
     即便嵌套,也要将 try catch写全 即:
         考虑到每一个可能出现的异常信息而:
-            try ctacth
-            try catch
-            try catch catch catch ....
+            try ctacth finally
+            try catch finally
+            try catch catch catch ....finally
             防止错误信息丢失难以定位程序bug
 java的开发团队显然更认为这种错误应该由开发人员自己想办法通过特性处理
 
