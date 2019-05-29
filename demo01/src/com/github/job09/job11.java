@@ -17,6 +17,7 @@ public class job11 {
         try{
             throw new RuntimeException();
         }catch (RuntimeException e){
+            System.out.println("执行retun");
             return;
         }
         finally {
