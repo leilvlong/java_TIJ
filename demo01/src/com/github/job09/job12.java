@@ -11,17 +11,16 @@ package com.github.job09;
     5.有try就必须要有catch,只有使用finally时是例外
     6.每个catch只能捕获一个异常,剩余没有被捕获的异常只能由下一个离他最近的catch捕获
     7.每一个异常都由离他最近的catch捕获
-    8.每一个catch都会捕获离他最近的异常
-    9.外围try会捕获内围try的异常,内类try无法捕获外围try的异常
+    8.外围try会捕获内围try的异常,内类try无法捕获外围try的异常
         因为内围try在外围try的作用域下,而外围try不在内围try的作用域中
-    10.try.finally若没有catch则代表异常信息已经不重要了:
+    9.try.finally若没有catch则代表异常信息已经不重要了:
       因为它认为使用finally语句的程序员已经意识到了这种问题, 即:
             不管异常是否发生,我都已经做好了最坏的打算,
             正是因为已经做了最坏的打算,所以在finally中有没有异常信息已经不重要了
             这也是为什么finally为什么除了关机什么都无法阻止他运行的原因
 
-    11.每一份try catch finally是成套的,一体的,尽管作用域不同
-    12.抛在方法上的异常必须得到处理
+    10.每一份try catch finally是成套的,一体的,尽管作用域不同
+    11.抛在方法上的异常必须得到处理
 
 以下有对于TIJ对于这种异常丢失的案例的各种翻版来对以上特性佐证
 java的特性很难和作用域区分开来单独来解释
@@ -51,8 +50,8 @@ public class job12 {
         //fun2();
         //fun3();
         //fun4();
-        //fun5();
-        fun6();
+        fun5();
+        //fun6();
     }
 
     /**
@@ -175,6 +174,8 @@ public class job12 {
                     System.out.println("finally exception:" + e);
                 }
             }
+
+            //throw new RuntimeException("我错了"); //异常信息再度丢失
         }catch (Exception e){
             System.out.println("outException: "+ e);
         }
