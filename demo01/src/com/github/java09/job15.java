@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 /*
 构造与清理2:

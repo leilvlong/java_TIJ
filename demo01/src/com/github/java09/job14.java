@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 /*
 构造异常后正确清理:
