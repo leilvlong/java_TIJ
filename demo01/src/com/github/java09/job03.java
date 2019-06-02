@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

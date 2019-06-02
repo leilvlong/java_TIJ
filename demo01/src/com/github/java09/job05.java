@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 public class job05 {
     public static void main(String[] args) {
