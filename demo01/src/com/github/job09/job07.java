@@ -42,7 +42,7 @@ class Rethrowing{
         try{
             fun();
         }catch (Exception e){
-            System.out.println("error in class Rethrowing method fun");
+            System.out.println("error in class Rethrowing method gun");
             ErrorUtil.pringErrorMassage(e);
             throw (Exception) e.fillInStackTrace();
         }
@@ -52,7 +52,7 @@ class Rethrowing{
         try{
             gun();
         }catch (Exception e){
-            System.out.println("error in class Rethrowing method fun");
+            System.out.println("error in class Rethrowing method hun");
             ErrorUtil.pringErrorMassage(e);
             throw (Exception) e.fillInStackTrace();
         }
