@@ -1,8 +1,7 @@
-package com.github.job09;
+package com.github.java09;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 
 class ErrorUtil{
