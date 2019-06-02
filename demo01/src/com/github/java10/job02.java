@@ -9,11 +9,53 @@ package com.github.java10;
     一个操作符在应用于特定的类时,被赋予了特殊的意义
     用于String的+与+=赋予的意义是字符串拼接(底层的实现是StringBuilder.append方法)
 
+可以想象:
+    具有只读属性的String需要进行操作,不断地返回新的字符串对象,然后对新的字符串操作
+    例如:
+        strA + strB + strC....
+        每一次拼接操作返回一个新的字符串然后再拼接这效率有多么低是可以想象的
 
 以下案例中有JVM的执行指令,最下面注释就是:
     可以看到字符串拼接执行了大量的StringBuilder.append
     这由JVM自动引入识别
+    JVM自动的对字符串拼接操作进行了优化
 
+StringBuilder:
+    该对象会创建一个字符缓冲区,操作该对象实际是操作该缓冲区,等操作结束后toString;
+    以下为StringBuilder.toString的源码:
+        @Override
+        public String toString() {
+        // Create a copy, don't share the array
+        return new String(value, 0, count);
+    }
+    value就是那个字符数组
+
+    以下为接收String作为参数的构造方法源码所用到的代码:
+
+    public StringBuilder(String str) {
+        super(str.length() + 16);
+        append(str);
+    }
+
+    AbstractStringBuilder(int capacity) {
+        value = new char[capacity];
+    }
+
+    @Override
+    public StringBuilder append(String str) {
+        super.append(str);
+        return this;
+    }
+
+    public AbstractStringBuilder append(String str) {
+        if (str == null)
+            return appendNull();
+        int len = str.length();
+        ensureCapacityInternal(count + len);
+        str.getChars(0, len, value, count);
+        count += len;
+        return this;
+    }
  */
 
 
@@ -23,6 +65,16 @@ public class job02 {
         String str1 = "mango: ";
         String str2 = "abc: "+ str1 + "def: " + 47;
         System.out.println(str2);
+
+        String str = "123456";
+
+        int count = 0;
+        int len = str.length();
+
+        char[] value = new char[str.length()+16];
+        str.getChars(0, len, value, count);
+        count += len;
+        System.out.println(count);
 
     }
 
