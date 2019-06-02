@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 /*
 获取异常栈:
     第一个为抛出异常的方法名

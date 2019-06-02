@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 /*
 out error仅知道自己来自于main方法在第十三行发生的异常
