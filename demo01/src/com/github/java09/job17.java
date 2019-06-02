@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 /*
 将异常检查转为不检查异常:
