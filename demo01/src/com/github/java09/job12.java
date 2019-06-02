@@ -1,4 +1,4 @@
-package com.github.job09;
+package com.github.java09;
 
 /*
 以下案例在TIJ中被称为异常信息丢失:
