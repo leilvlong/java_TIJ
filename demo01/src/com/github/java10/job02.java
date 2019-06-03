@@ -77,16 +77,6 @@ public class job02 {
         String str2 = "abc: "+ str1 + "def: " + 47;
         System.out.println(str2);
 
-        String str = "123456";
-
-        int count = 0;
-        int len = str.length();
-
-        char[] value = new char[str.length()+16];
-        str.getChars(0, len, value, count);
-        count += len;
-        System.out.println(count);
-
     }
 
 
