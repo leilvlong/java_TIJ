@@ -56,6 +56,17 @@ StringBuilder:
         count += len;
         return this;
     }
+
+以上源码的意思类似于:
+    char[] chars = new char[120];
+    String str1 = "abc";
+    String str2 = "defg";
+    int count = 0;
+    str1.getChars(0,str1.length(),chars,count);
+    count+=str1.length();
+    str2.getChars(0,str2.length(),chars,count);
+    count+=str2.length();
+    System.out.println(new String(chars,0,count));
  */
 
 
