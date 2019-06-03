@@ -38,6 +38,8 @@ import java.util.Arrays;
 该案例的启示:
     在书写上下文中使用字符串拼接编译器会自动帮我们优化
     但是在复杂的业务场景情况下,更稳妥的方式是自己动手
+    另外,不要尝试StringBuilder.append(a+":"+c)这种操作,
+    这又会创建StringBuilder对象进行操作
 
  */
 public class job03{
