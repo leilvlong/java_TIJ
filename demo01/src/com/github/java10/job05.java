@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.text.Format;
+import java.util.Date;
 import java.util.Formatter;
 
 public class job05 {
@@ -16,6 +17,13 @@ public class job05 {
 
         tom.move(1,3);
 
+
+        // 原生的日期格式化
+        Formatter formatter = new Formatter();
+        Date date = new Date();
+        Formatter format = formatter.format("Local time:%tY-%tm-%td/%tT", date,date,date,date);
+        String s = format.toString();
+        System.out.println(s);
     }
 
     public static void fun1(){
