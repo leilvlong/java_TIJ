@@ -14,16 +14,17 @@ import java.util.regex.Pattern;
 其次为最外围的括号
  */
 public class job17 {
+    static String poem =
+            "Twas brillig, and the slithy toves\n" +
+                    "Did gyre and gimble in the wabe.\n" +
+                    "All mimsy were the borogoves,\n" +
+                    "And the mome raths outgrabe.\n\n" +
+                    "Beware the Jabberwock, my son,\n" +
+                    "The jaws that bite, the claws that catch.\n" +
+                    "Beware the Jubjub bird, and shun\n" +
+                    "The frumious Bandersnatch.";
     public static void main(String[] args) {
-        String poem =
-                "Twas brillig, and the slithy toves\n" +
-                "Did gyre and gimble in the wabe.\n" +
-                "All mimsy were the borogoves,\n" +
-                "And the mome raths outgrabe.\n\n" +
-                "Beware the Jabberwock, my son,\n" +
-                "The jaws that bite, the claws that catch.\n" +
-                "Beware the Jubjub bird, and shun\n" +
-                "The frumious Bandersnatch.";
+
 
         /*
         Matcher matcher =
@@ -34,8 +35,7 @@ public class job17 {
                 System.out.println("[" + matcher.group(i) + "]");
                 count++;
             }
-        }
-                        */
+        }              */
 
         //习题思路解法 找出所有非大写开头的单词 计算个数
         //以词边界
