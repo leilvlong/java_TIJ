@@ -1,5 +1,6 @@
 package com.github.java10;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
@@ -38,14 +39,14 @@ public class job17 {
 
         //习题思路解法 找出所有非大写开头的单词 计算个数
         //以词边界
-        Matcher matcher =
-                Pattern.compile("(?m)(\\b[a-z]|\\s+\\b[a-z])\\w+")
-                        .matcher(poem);
-        //以行边界
         /*Matcher matcher =
-                Pattern.compile("(^[a-z]|\\s+[a-z])\\w+")
+                Pattern.compile("(?m)(\\b[a-z]|\\s+\\b[a-z])\\w+")
                         .matcher(poem);*/
-        Set<String> words = new TreeSet<String>();
+        //以行边界
+        Matcher matcher =
+                Pattern.compile("(^[a-z]|\\s+[a-z])\\w+")
+                        .matcher(poem);
+        Set<String> words = new HashSet<>();
         while (matcher.find()) {
             for (int i = 0; i <= matcher.groupCount(); i++) {
                 System.out.print("[" + matcher.group(i) + "]");
@@ -59,3 +60,13 @@ public class job17 {
 
     }
 }
+
+/*[ the,  borogoves,  in,  jaws,  my,  claws,  gimble,
+        wabe,  outgrabe,  toves,  mimsy,  were,  brillig,
+        slithy,  raths,  son,  and,  catch,  bird,  bite,
+        mome,  frumious,  gyre,  shun,  that]*/
+
+/*[ the,  borogoves,  in,  jaws,  my,  claws,  gimble,
+        wabe,  outgrabe,  toves,  mimsy,  were,  brillig,
+        slithy,  raths,  son,  and,  catch,  bird,  bite,
+        mome,  frumious,  gyre,  shun,  that]*/
