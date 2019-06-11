@@ -2,7 +2,10 @@ package com.github.java10;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/*
+replace 系列方法只能做普通的字符串替换
+要做特殊处理无法做到
+ */
 public class job21 {
 
     static String input =
