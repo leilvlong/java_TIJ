@@ -4,6 +4,11 @@ import com.github.typeinfo.pets.Pet;
 import com.github.typeinfo.pets.PetCreator;
 import java.util.*;
 
+/*
+直到这个小节结束我都对这段代码很头疼,
+同时java对于类型判断确实也挺麻烦
+好在java的强类型做的比较好,不用担心这种类型判断的问题
+ */
 
 public class job09 {
     public static void main(String[] args) {
