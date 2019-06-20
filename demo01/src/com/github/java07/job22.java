@@ -11,58 +11,62 @@ import java.io.FileOutputStream;
 
 public class job22 {
     public static void main(String[] args) throws Throwable {
-        // 委托者
+        //委托者
         MyInter myInter = new MyInter();
 
         Prxo prxo = new Prxo(myInter);
-        System.out.println("承接委托类名: "+ prxo.getClass().getName());
+        System.out.println("承接委托类名: " + prxo.getClass().getName());
 
 
-        //动态代理对象使用
-        /*ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
+
+        /*//动态代理对象使用
+        ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
         System.out.println("动态代理对象名: "+ handler.getClass().getName());
         handler.fun();*/
 
-        /*
-        //获取动态代理对象的自字节码文件的方法
-        testPoxy();
-        */
+        /*//获取动态代理对象的自字节码文件的方法
+        testPoxy();  */
 
         //自定义伪动态代理对象
-        MyPoxy myPoxy = new MyPoxy( prxo);
-        System.out.println("自定义伪动态代理对象名: "+ myPoxy.getClass().getName());
+        MyPoxy myPoxy = new MyPoxy(prxo);
+        System.out.println("自定义伪动态代理对象名: " + myPoxy.getClass().getName());
         myPoxy.fun();
     }
 
     /**
      * 该方法可用于反编译动态代理对象
      */
-    public static void testPoxy(){
+    public static void testPoxy() {
         byte[] bytes = ProxyGenerator.generateProxyClass("$Proxy", new Class[]{ThisInter.class});
-        try(FileOutputStream fos =new FileOutputStream("demo01\\funs\\$Proxy.class");){
+        try (FileOutputStream fos = new FileOutputStream("demo01\\funs\\$Proxy.class");) {
             fos.write(bytes);
             fos.flush();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
 
-interface ThisInter{
+
+/**
+ * 第一部分:
+ *      接口
+ *      实现类（委托者）
+ *      承接委托的类
+ */
+interface ThisInter {
     void fun();
 }
 
-class MyInter implements ThisInter{
+class MyInter implements ThisInter {
     @Override
     public void fun() {
         System.out.println("Class MtInter method fun...");
     }
 }
 
-
 class Prxo implements InvocationHandler {
     private MyInter obj;
-
 
     public Prxo(MyInter obj) {
         this.obj = obj;
@@ -71,7 +75,7 @@ class Prxo implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         //获取对象类名
-        System.out.println("invoke方法参数对象名："+ proxy.getClass().getName());
+        System.out.println("invoke方法参数对象名：" + proxy.getClass().getName());
 
         //若使用proxy的任何方法都会无限递归 因为这个对象就是动态代理对象,原因已解释过
         //System.out.println(proxy.toString());
@@ -82,16 +86,24 @@ class Prxo implements InvocationHandler {
             transform method call failed at JPLISAgent.c line: 844
         */
 
-        method.invoke(obj,args);
+        method.invoke(obj, args);
         return null;
     }
 }
 
-class MyPoxy implements ThisInter{
 
+/**
+ * 第二部分:
+ *      自己动手实现动态代理对象
+ * 因为是编译期实现,所以不需要参数:
+ *      类加载器
+ *      接口数组
+ * 只需要承接委托类即可
+ */
+class MyPoxy implements ThisInter {
     private InvocationHandler handler;
 
-    public MyPoxy(InvocationHandler handler)  {
+    public MyPoxy(InvocationHandler handler) {
         this.handler = handler;
     }
 
@@ -102,19 +114,20 @@ class MyPoxy implements ThisInter{
             Method method = null;
             Class<?>[] interfaces = this.getClass().getInterfaces();
             for (Class<?> anInterface : interfaces) {
-                try{
+                try {
                     method = anInterface.getMethod(methodName);
-                }catch (NoSuchMethodException e){
+                } catch (NoSuchMethodException e) {
                 }
             }
-            handler.invoke(this,method,new Object[]{});
+            handler.invoke(this, method, new Object[]{});
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
     }
 
     /**
-     * Object 根类只重写这一个以做示例
+     * Object 根类只重写这一个方法以做示例
+     *
      * @return
      */
     @Override
@@ -122,7 +135,7 @@ class MyPoxy implements ThisInter{
         String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
         try {
             Method method = Object.class.getMethod(methodName);
-            return (String) handler.invoke(this,method,new Object[]{});
+            return (String) handler.invoke(this, method, new Object[]{});
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -131,21 +144,23 @@ class MyPoxy implements ThisInter{
 }
 
 
-
-// 该类是通过反编译后获取的动态代理对象的文件,我将其内容复制过来了
- final class $Proxy extends Proxy implements ThisInter {
+/**
+ * 以下内容为JVM动态实现的代理对象:
+ * 通过API得到该动态代理对象的类的具体实现编写方式
+ */
+final class $Proxy extends Proxy implements ThisInter {
     private static Method m1;
     private static Method m3;
     private static Method m2;
     private static Method m0;
 
-    public $Proxy(InvocationHandler var1)  {
+    public $Proxy(InvocationHandler var1) {
         super(var1);
     }
 
-    public final boolean equals(Object var1)  {
+    public final boolean equals(Object var1) {
         try {
-            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
+            return (Boolean) super.h.invoke(this, m1, new Object[]{var1});
         } catch (RuntimeException | Error var3) {
             throw var3;
         } catch (Throwable var4) {
@@ -155,7 +170,7 @@ class MyPoxy implements ThisInter{
 
     public final void fun() {
         try {
-            super.h.invoke(this, m3, (Object[])null);
+            super.h.invoke(this, m3, (Object[]) null);
         } catch (RuntimeException | Error var2) {
             throw var2;
         } catch (Throwable var3) {
@@ -165,7 +180,7 @@ class MyPoxy implements ThisInter{
 
     public final String toString() {
         try {
-            return (String)super.h.invoke(this, m2, (Object[])null);
+            return (String) super.h.invoke(this, m2, (Object[]) null);
         } catch (RuntimeException | Error var2) {
             throw var2;
         } catch (Throwable var3) {
@@ -173,9 +188,9 @@ class MyPoxy implements ThisInter{
         }
     }
 
-    public final int hashCode()  {
+    public final int hashCode() {
         try {
-            return (Integer)super.h.invoke(this, m0, (Object[])null);
+            return (Integer) super.h.invoke(this, m0, (Object[]) null);
         } catch (RuntimeException | Error var2) {
             throw var2;
         } catch (Throwable var3) {
