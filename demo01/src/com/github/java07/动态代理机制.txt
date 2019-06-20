@@ -1,242 +1,38 @@
-1. 实现InvocationHandler接口编写一个承接委托的类
-   该类中委托者与其为组合关系
+1. 必须实现InvocationHandler接口编写一个承接委托的类
+   该类与委托者为组合关系
 
 2. 使用Proxy.newProxyInstance生成动态的代理对象,其参数条件如下
-    2.1. 类加载器,加载承接委托的类
-    2.2. 委托者具有的接口数组,作用有两个
-        2.2.1. 获取该委托者具有的行为
-        2.2.2. 返回接口类型的引用
+    1) 承接委托类的类加载器,加载承接委托的类
+    2) 委托者具有的接口数组,作用有两个:
+        1) 获取该委托者具有的行为
+        2) 返回接口类型的引用
         动态代理对象不关注类型,只关心行为
-    2.3. 承接委托的类的对象
+    3) 承接委托类的对象
 
-3. 条件满足,JVM动态生成代理对象,对象引用类型为参数条件2.2中的接口类型
+3. 以上条件满足,JVM动态生成代理对象,对象引用类型为参数条件2.2中的接口类型
     获取动态代理对象的类名:
         System.out.println(动态代理对象.getClass().getName())
-        com.github.java07.$Proxy0
-    该动态代理对象声明实现了参数条件2.2中的所有接口
+    该动态代理对象声明实现了参数条件2.2中的所有接口的抽象方法
 
 4. 使用该动态代理对象无论如何都会调用InvocationHandler接口的唯一方法invoke 原因如下:
     JVM生成动态代理对象时:
-        4.1. 使用参数条2.3承接委托类与参数条件2.2中的接口组合了一个新类
-        4.2. 返回引用时返回的是参数条件2中的接口
+        4.1. JVM生成动态代理对象需要一个新类,该类在运行时产生,并用来创建动态代理对象
+        4.2. JVM生成的类声称实现了委托者所有的接口,返回引用时向上转型为委托者具有的接口类型
                 不然无法拥有正确的行为
-        4.3. 使用时转型为InvocationHandler
+        4.3. JVM生成的类组合了承接委托类的对象,将承接委托类的对象向上转型为InvocationHandler
            InvocationHandler只能使用invoke方法
-           该invoke方法调用承接委托类的invoke方法,传入参数:
-           4.3.1 代理对象
-           4.3.2 执行方法
-           4.3.3 方法参数
-           若调用4.3.1的代理对象的方法会重走整个4.3的流程而无限递归
+           JVM生成的类实现的每一个方法都调用了承接委托类对象的invoke方法
+           传入参数:
+                1) 代理对象自身(this)
+                2) 执行方法(method对象,通过堆栈信息,获取执行的方法名,使用反射获取method对象)
+                    method对象具有特点:
+                        不管如何获取的method对象,最终执行的对象是谁,该method对象就指向执行对象
+                3) 方法参数
+                因此,在承接委托类的invoke对象中若调用那个object对象就会递归
+                因为一旦调用就会重走4.3流程,重走过来又调用,然后又重走,不可逆递归
 
-5. 代码案例,分为三部分:
-    5.1 JVM生成的机动态代理对象使用
-    5.2 自定义伪动态代理对象使用
-    5.3 JVM生成的动态代理对象文件的反编译源码
-package com.github.java07;
-import sun.misc.ProxyGenerator;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.io.FileOutputStream;
-
-
-public class job22 {
-    public static void main(String[] args) throws Throwable {
-        // 承接委托对象使用
-        MyInter myInter = new MyInter();
-        Prxo prxo = new Prxo(myInter);
-        /*
-        System.out.println("动态代理对象名: "+ prxo.getClass().getName());
-        prxo.invoke(prxo,myInter.getClass().getMethod("fun"),null);
-        */
-
-        //动态代理对象使用
-        /*ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
-        System.out.println("动态代理对象名: "+ handler.getClass().getName());
-        handler.fun();*/
-
-        /*
-        //获取动态代理对象的自字节码文件的方法
-        testPoxy();
-        */
-
-        //自定义伪动态代理对象
-        MyPoxy myPoxy = new MyPoxy( prxo);
-        System.out.println("自定义伪动态代理对象名: "+ myPoxy.getClass().getName());
-        myPoxy.fun();
-    }
-
-    /**
-     * 该方法可用于反编译动态代理对象
-     */
-    public static void testPoxy(){
-        byte[] bytes = ProxyGenerator.generateProxyClass("$Proxy", new Class[]{ThisInter.class});
-        try(FileOutputStream fos =new FileOutputStream("demo01\\funs\\$Proxy.class");){
-            fos.write(bytes);
-            fos.flush();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-}
-
-
-interface ThisInter{
-    void fun();
-}
-
-
-class MyInter implements ThisInter{
-
-    @Override
-    public void fun() {
-        System.out.println("Class MtInter method fun...");
-    }
-}
-
-
-class Prxo implements InvocationHandler {
-    private MyInter obj;
-
-    public Prxo(MyInter obj) {
-        this.obj = obj;
-    }
-
-    @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        //获取对象类名
-        System.out.println("invoke方法参数对象名："+ proxy.getClass().getName());
-
-        //若使用proxy的任何方法都会无限递归 因为这个对象就是动态代理对象,原因已解释过
-        //System.out.println(proxy.toString());
-        /*
-        以上是详细的异常信息,完全一致 只不过java的设计者把这个问题给抛出来了而我水平不够，
-        只能等JVM虚拟机给我抛出来:
-            *** java.lang.instrument ASSERTION FAILED ***: "!errorOutstanding" with message
-            transform method call failed at JPLISAgent.c line: 844
-        */
-
-        method.invoke(obj,args);
-        return null;
-
-    }
-}
-
-/*
-自定义伪动态代理对象
-获取反编译的动态代理对象的字节码文件与我编写的伪动态代理文件比较
-尽管实现水平上存在较大的差距,
-证明了我的论证思路是合理正确的
-本文末尾有动态代理的反编码代码
-*/
-class MyPoxy implements ThisInter{
-
-    InvocationHandler handler;
-
-    public MyPoxy(InvocationHandler handler)  {
-        this.handler = handler;
-    }
-
-    @Override
-    public void fun() {
-        String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-        try {
-            Method method = null;
-            Class<?>[] interfaces = this.getClass().getInterfaces();
-            for (Class<?> anInterface : interfaces) {
-                try{
-                    method = anInterface.getMethod(methodName);
-                }catch (NoSuchMethodException e){
-                }
-            }
-            handler.invoke(this,method,new Object[]{});
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-    }
-
-    /**
-     * Object 根类只重写这一个以做示例
-     * @return
-     */
-    @Override
-        public String toString() {
-            String methodName = Thread.currentThread().getStackTrace()[1].getMethodName();
-            try {
-                Method method = Object.class.getMethod(methodName);
-                return (String) handler.invoke(this,method,new Object[]{});
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-            return null;
-        }
-}
-
-
-
-// 该类是通过反编译后获取的动态代理对象的文件,我将其内容复制过来了
- final class $Proxy extends Proxy implements ThisInter {
-    private static Method m1;
-    private static Method m3;
-    private static Method m2;
-    private static Method m0;
-
-    public $Proxy(InvocationHandler var1)  {
-        super(var1);
-    }
-
-    public final boolean equals(Object var1)  {
-        try {
-            return (Boolean)super.h.invoke(this, m1, new Object[]{var1});
-        } catch (RuntimeException | Error var3) {
-            throw var3;
-        } catch (Throwable var4) {
-            throw new UndeclaredThrowableException(var4);
-        }
-    }
-
-    public final void fun() {
-        try {
-            super.h.invoke(this, m3, (Object[])null);
-        } catch (RuntimeException | Error var2) {
-            throw var2;
-        } catch (Throwable var3) {
-            throw new UndeclaredThrowableException(var3);
-        }
-    }
-
-    public final String toString() {
-        try {
-            return (String)super.h.invoke(this, m2, (Object[])null);
-        } catch (RuntimeException | Error var2) {
-            throw var2;
-        } catch (Throwable var3) {
-            throw new UndeclaredThrowableException(var3);
-        }
-    }
-
-    public final int hashCode()  {
-        try {
-            return (Integer)super.h.invoke(this, m0, (Object[])null);
-        } catch (RuntimeException | Error var2) {
-            throw var2;
-        } catch (Throwable var3) {
-            throw new UndeclaredThrowableException(var3);
-        }
-    }
-
-    static {
-        try {
-            m1 = Class.forName("java.lang.Object").getMethod("equals", Class.forName("java.lang.Object"));
-            m3 = Class.forName("com.github.java07.ThisInter").getMethod("fun");
-            m2 = Class.forName("java.lang.Object").getMethod("toString");
-            m0 = Class.forName("java.lang.Object").getMethod("hashCode");
-        } catch (NoSuchMethodException var2) {
-            throw new NoSuchMethodError(var2.getMessage());
-        } catch (ClassNotFoundException var3) {
-            throw new NoClassDefFoundError(var3.getMessage());
-        }
-    }
-}
+5. 代码案例,分为三部分:  # job22的案例
+    1) 接口、委托者、承接委托类
+    2) 编译器手动实现动态代理对象
+    3) 通过Api获取生成动态代理对象的类文件
 
