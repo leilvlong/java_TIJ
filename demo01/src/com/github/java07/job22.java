@@ -11,12 +11,12 @@ import java.io.FileOutputStream;
 
 public class job22 {
     public static void main(String[] args) throws Throwable {
-        // 承接委托对象使用
+        // 委托者
         MyInter myInter = new MyInter();
 
         Prxo prxo = new Prxo(myInter);
-        /*System.out.println("动态代理对象名: "+ prxo.getClass().getName());
-        prxo.invoke(prxo,myInter.getClass().getMethod("fun"),null);*/
+        System.out.println("承接委托类名: "+ prxo.getClass().getName());
+
 
         //动态代理对象使用
         /*ThisInter handler= (ThisInter) Proxy.newProxyInstance(Prxo.class.getClassLoader(), new Class[]{ThisInter.class}, prxo);
@@ -53,7 +53,6 @@ interface ThisInter{
 }
 
 class MyInter implements ThisInter{
-
     @Override
     public void fun() {
         System.out.println("Class MtInter method fun...");
@@ -85,13 +84,12 @@ class Prxo implements InvocationHandler {
 
         method.invoke(obj,args);
         return null;
-
     }
 }
 
 class MyPoxy implements ThisInter{
 
-    InvocationHandler handler;
+    private InvocationHandler handler;
 
     public MyPoxy(InvocationHandler handler)  {
         this.handler = handler;
