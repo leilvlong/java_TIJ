@@ -74,6 +74,7 @@ class DynamicProxyHandler implements InvocationHandler{
         count++;
         if (count++<=200){
             System.out.println(proxy.toString());
+            count = 0;
         }
 
 
