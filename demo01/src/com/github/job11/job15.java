@@ -37,6 +37,10 @@ JDK提供了Api由JVM来生成动态代理对象:
 前文案例URL: com/github/java07/job22.java
 
 以下为Tij中的案例:
+    我对该案例稍微做了一些修改:
+        任何对proxy的调用都会导致递归,
+        因为动态代理对象的每个方法最终是调用了InvocationHandler.invoke方法,并将this传递过来
+        但是只要给个递归出口,这种情况就可以避免
 */
 
 import java.lang.reflect.InvocationHandler;
@@ -57,6 +61,7 @@ public class job15 {
 
 
 class DynamicProxyHandler implements InvocationHandler{
+    private static int count;
 
     private Interface proxied;
 
@@ -66,6 +71,12 @@ class DynamicProxyHandler implements InvocationHandler{
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        count++;
+        if (count++<=200){
+            System.out.println(proxy.toString());
+        }
+
+
         if(args != null){
             System.out.print("The arg: ");
             return method.invoke(proxied,args);
