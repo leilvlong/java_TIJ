@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
