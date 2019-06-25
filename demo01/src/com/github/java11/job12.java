@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 /*
 instanceof与Class对象:
    都可以用来做类型判断,但是有着根本的不同:
