@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 /*
 可以使用Class对象的cast为对象引用转型
  */
