@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 /*
 动态代理:
