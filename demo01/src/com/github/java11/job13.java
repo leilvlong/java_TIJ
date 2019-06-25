@@ -1,8 +1,7 @@
-package com.github.job11;
+package com.github.java11;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /*
@@ -10,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public class job13 {
     public static void main(String[] args) {
-        String[] strs = {"com.github.job11.ShowMethods"};
+        String[] strs = {"com.github.java11.ShowMethods"};
         ShowMethods.main(strs);
     }
 }
