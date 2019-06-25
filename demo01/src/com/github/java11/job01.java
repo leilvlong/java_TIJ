@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 /*
 运行时类型信息:
