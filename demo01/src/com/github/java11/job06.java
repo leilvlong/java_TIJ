@@ -1,8 +1,6 @@
-package com.github.job11;
+package com.github.java11;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
 Class<? super GrandSonClass>:
