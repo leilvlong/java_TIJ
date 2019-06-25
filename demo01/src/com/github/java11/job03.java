@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 /*
 一个有趣的现象当使用 .class 来创建Class对象的引用时,不会自动的初始化该Class对象:
