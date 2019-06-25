@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 import java.util.Arrays;
 import java.util.Collection;
