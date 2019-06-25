@@ -1,4 +1,4 @@
-package com.github.job11;
+package com.github.java11;
 
 /*
 Class对象:
@@ -32,7 +32,7 @@ public class job02 {
 
         // 3. Class Api 访问
         try {
-            Class.forName("com.github.job11.Cookie");
+            Class.forName("com.github.java11.Cookie");
         } catch (ClassNotFoundException e) {
         }
 
