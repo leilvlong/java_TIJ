@@ -28,7 +28,6 @@ class LinkedStack<T>{
     private static class Node<U>{
         U item;
         Node<U> next;
-        Node<U> last;
 
         Node(){
             this.item = null;
@@ -44,13 +43,11 @@ class LinkedStack<T>{
             return item == null && next == null;
         }
 
-
         @Override
         public String toString() {
             return "Node{" +
-                    "item:" + item +
-                    ", next:" + next +
-                    ", last:" + last +
+                    "item=" + item +
+                    ", next=" + next +
                     '}';
         }
     }
