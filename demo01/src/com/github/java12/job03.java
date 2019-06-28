@@ -25,7 +25,7 @@ public class job03 {
         System.out.println();
 
         IterableFibonacci integers = new IterableFibonacci(10);
-        System.out.print("Class IterableFibonacci");
+        System.out.print("Class IterableFibonacci: ");
         for (Integer integer : integers) {
             System.out.print(integer + " ");
         }
