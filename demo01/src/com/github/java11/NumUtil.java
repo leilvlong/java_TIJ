@@ -61,7 +61,7 @@ public class NumUtil {
 
 
     public static void checkBinaryString(String binaryString){
-        if (! binaryString.matches("([-][1][0-1]*)|[0-1]*|0")){
+        if (! binaryString.matches("([-][0-1][0-1]*)|[0-1]*|0")){
             throw new RuntimeException("is not binary string");
         }
 
@@ -108,6 +108,7 @@ public class NumUtil {
 
 
     public static void main(String[] args) {
-
+        System.out.println(getBinary(-1));
+        System.out.println(getDecimal("-0111"));
     }
 }
