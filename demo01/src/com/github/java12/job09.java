@@ -9,6 +9,7 @@ package com.github.java12;
 泛型擦除:
     通过定义泛型的边界,保存必要的部分,不必要的则擦除.泛型调用的行为安全得到了保证
     这看起来很蠢,因为继承也可以做到,但是要明白一点,泛型是指定什么就是什么,而继承只是指定了引用类型
+    这意味着可以使 根类一的边界，也可以是根类二、根类三的
     而这种泛型的类型检查只会发生在编译期间,(通过ArrayList可以窥探一点,当指定泛型后,返回时做类型转换)
     在运行期间,容器持有的泛型数据类型会被擦除,替换为他们的上边界,如果未指定,则是Object
 
@@ -38,15 +39,15 @@ import java.util.*;
 
 public class job09 {
     public static void main(String[] args) {
-        HasF hasF1 = new HasF();
+        /*HasF hasF1 = new HasF();
         HasTwoF hasF2 = new HasTwoF();
         Get<HasF> get1 = new Get<>(hasF1);
         get1.get().fun();
 
         Get<HasF> get2 = new Get<>(hasF2);
-        get2.get().fun();
+        get2.get().fun();*/
 
-
+        fun3();
     }
 
     public static void fun1(){
