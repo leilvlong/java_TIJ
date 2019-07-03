@@ -13,10 +13,9 @@ import java.util.Set;
 public class job02 {
     public static void main(String[] args) throws IOException {
         Properties properties = new Properties();
-        FileReader reader = new FileReader("demo01\\config.properties");
+        FileReader reader = new FileReader("demo01\\funs\\config.properties");
         properties.load(reader);
         reader.close();
-        System.out.println(properties);
         Set<Object> strings = properties.keySet();
         for (Object string : strings) {
             System.out.println(properties.getProperty((String) string));

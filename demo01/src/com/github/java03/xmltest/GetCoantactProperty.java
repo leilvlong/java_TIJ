@@ -56,48 +56,11 @@ public class GetCoantactProperty {
         return gp;
     }
 
-       /* // 第一种方式
-    public Object getBean(String className){
-        Object obj = null;
-        try{
-            obj = Class.forName(className).newInstance();
-        }catch (Exception e){
-            throw new RuntimeException("获取对象异常");
-        }
-        return obj;
-    }*/
-
-    /*public Object getBean(String key){
-        ResourceBundle rb = ResourceBundle.getBundle("bean");
-        String className = rb.getString(key);
-        Object obj = null;
-        try{
-            obj = Class.forName(className).newInstance();
-        }catch (Exception e){
-            throw new RuntimeException("获取对象异常");
-        }
-        return obj;
-    }*/
-
-    /*public Object getBean(String key){
-        InputStream is = getClass().getClassLoader().getResourceAsStream("bean.xml");
-        SAXReader reader = new SAXReader();
-        try {
-            Document read = reader.read(is);
-            Element clazz =(Element) read.selectSingleNode("//bean[@id='" + key + "']");
-            String className = clazz.attributeValue("class");
-            Object obj = Class.forName(className).newInstance();
-            return obj;
-        } catch (Exception e) {
-            throw new RuntimeException("获取对象异常");
-        }
-    }*/
-
     public static void main(String[] args) {
         GetCoantactProperty gcp = GetCoantactProperty.getGCP();
         gcp.getBean("contactService");
         gcp.getBean("contactJdbc");
-
+        gcp.getBean("contactTest");
 
     }
 }

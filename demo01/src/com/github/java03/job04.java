@@ -68,12 +68,12 @@ I/O的使用虽然简便  但是对应的类很多 使用起来各具特点:
  */
 public class job04 {
     public static void main(String[] args) throws Exception {
-        fun1();
+        //fun1();
         //fun2();
         //fun3();
         //fun4();
         //fun5();
-        //fun6();
+        fun6();
         //fun7();
     }
 
@@ -181,8 +181,8 @@ public class job04 {
         OutputStreamWriter   输出转换流
      */
     public static void fun6() throws Exception{
-        InputStreamReader fil = new InputStreamReader(new FileInputStream("demo01\\funs\\jjj.txt"),"gbk");
-        OutputStreamWriter fol = new OutputStreamWriter(new FileOutputStream("demo01\\funs\\kkk.txt"),"utf-8");
+        InputStreamReader fil = new InputStreamReader(new FileInputStream("demo01\\funs\\曹尼玛.txt"),"gbk");
+        OutputStreamWriter fol = new OutputStreamWriter(new FileOutputStream("demo01\\funs\\去尼玛.txt"),"gbk");
         int len;
         for(char[] chars=new char[1024*8];(len=fil.read(chars)) != -1; ){
             fol.write(chars,0,len);

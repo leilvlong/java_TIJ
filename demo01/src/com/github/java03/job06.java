@@ -24,6 +24,7 @@ java 8的lambda表达式更多的是为了这种函数式接口带来便利
     Stream才是可以被操作的数据容器流 如果返回值类型不是Stream 则代表为终结方法 该流以关闭
  */
 public class job06 {
+    static int index = 0;
     public static void main(String[] args) {
         // 使用fun方法得到国家所有 省 区 直辖市
         ArrayList<String> China = fun();
@@ -50,17 +51,22 @@ public class job06 {
         String[] strings = China.stream().filter(str -> !str.contains("省")).toArray(String[]::new);
         System.out.println(Arrays.toString(strings));
         */
+       // 获取数组大小
         String[] strs = new String[(int)China.stream()
                 .filter(str -> !str.contains("省")).count()];
-        Stream<String> provinceStream = China.stream().filter(str -> !str.contains("省"));
-        Iterator<String> iterator = provinceStream.iterator();
+        // 以获取迭代器对象的方式
+        /*Iterator<String> provinceIter = China.stream().filter(str -> !str.contains("省")).iterator();
         for (int i = 0; i < strs.length; i++) {
-            strs[i] = iterator.next();
+            strs[i] = provinceIter.next();
         }
-        System.out.println(Arrays.toString(strs));
+        System.out.println(Arrays.toString(strs));*/
+        ArrayList<String> strs2 = new ArrayList<>();
+        List<String> collect = China.stream().filter(s -> !s.contains("省")).map(s -> s.replace("区", "省")).collect(Collectors.toList());
+        System.out.println(collect);
+
 
         // 正如开头所说的 Stream流以关闭
-        System.out.println(provinceStream.count());
+        //System.out.println(provinceStream.count());
         // Exception in thread "main" java.lang.IllegalStateException:stream has already been operated upon or closed
         // 只要当后面操作返回的不是Stream 而企图对原先引用变量操作时 便会抛出这个异常
 

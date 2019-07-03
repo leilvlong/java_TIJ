@@ -1,15 +1,15 @@
 package com.github.java03;
 
-import java.io.*;
-import java.util.Arrays;
+        import java.io.*;
+        import java.util.Arrays;
 
 /*
 
  */
 public class job05 {
     public static void main(String[] args) throws IOException {
-       fun();
-       fun2();
+        fun();
+        fun2();
     }
 
     public static void fun() throws IOException{

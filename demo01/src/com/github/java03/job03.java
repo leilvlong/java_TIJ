@@ -108,9 +108,9 @@ public class job03 {
     public static void fun8() throws IOException, InterruptedException {
         //当一个方法内对properties文件进行操作时在覆写时一定要注意先load再创建写对象
         Properties pro = new Properties();
-        FileReader fil = new FileReader("demo01\\files\\config.properties");
+        FileReader fil = new FileReader("demo01\\files\\config2.properties");
         pro.load(fil);
-        FileWriter fwl= new FileWriter("demo01\\files\\config.properties");
+        FileWriter fwl= new FileWriter("demo01\\files\\config2.properties");
         for (String str : pro.stringPropertyNames()) {
             if(str.equals("lisi")){
                 pro.setProperty(str,"100");
