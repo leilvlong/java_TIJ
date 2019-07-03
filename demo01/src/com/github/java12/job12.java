@@ -46,6 +46,7 @@ class House extends Building{}
 /**
  * @param <T>
  *     尽管此处的Class对象不具备类型信息,但在运行时作为实体对象就不一样了
+ *     同样Class对象提供了Api做类型判断
  */
 class ClassTypeCapture<T>{
     Class<T> kind;
