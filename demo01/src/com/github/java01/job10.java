@@ -13,7 +13,12 @@ import java.util.ArrayList;
  */
 public class job10 {
     public static void main(String[] args) {
-
+        int count  = 0;
+        for (int i = 5; i <= 100; i++) {
+            count +=i;
+        }
+        System.out.println(count);
+        fun2(5,100);
     }
 
     public static void fun1 (int[] ints, int num){

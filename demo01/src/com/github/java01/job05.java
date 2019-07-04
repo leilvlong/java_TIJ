@@ -14,9 +14,10 @@ public class job05 {
         new Thread(()->{
             while(true){
                 synchronized (job05.class){
-                    while(tag != 1){
+                    if(tag != 1){
                         try {
                             job05.class.wait();
+                            continue;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -31,9 +32,10 @@ public class job05 {
         new Thread(()->{
             while(true){
                 synchronized (job05.class){
-                    while(tag != 2){
+                    if(tag != 2){
                         try {
                             job05.class.wait();
+                            continue;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -48,9 +50,10 @@ public class job05 {
         new Thread(()->{
             while(true){
                 synchronized (job05.class){
-                    while(tag != 3){
+                    if(tag != 3){
                         try {
                             job05.class.wait();
+                            continue;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

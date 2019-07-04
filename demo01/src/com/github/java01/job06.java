@@ -19,10 +19,11 @@ public class job06 {
     static ArrayList<File> fileArrayList = new ArrayList<>();
     public static void main(String[] args) {
         //System.out.println(fun(5));
-        /*File file = new File("E:\\");
+         File file = new File("E:\\");
         fun2(file);
-        System.out.println(fileArrayList);*/
-        System.out.println(fun3(5));
+        for (File file1 : fileArrayList) {
+            System.out.println(file1);
+        }
     }
 
     public static int fun(int num){
@@ -47,7 +48,6 @@ public class job06 {
                     fun2(file1);
                 } else {
                     fileArrayList.add(file1);
-                    System.out.println(fileArrayList.size());
                 }
             }
         }

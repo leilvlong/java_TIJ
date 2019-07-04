@@ -60,8 +60,6 @@ public class job01 {
         data.setNum(data.getNum()+10);
         System.out.println(data.getNum());
 
-
-
     }
 }
 

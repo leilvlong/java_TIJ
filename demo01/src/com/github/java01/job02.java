@@ -88,7 +88,7 @@ public class job02 {
 
     // 写一个类 继承Thread 使用对象锁 开启四条线程访问共享资源 每条线程将访问数据加入容器
     // 如果容器长度不对则数据安全有问题
-/*        new MyThread2().start();
+/*      new MyThread2().start();
         new MyThread2().start();
         new MyThread2().start();
         new MyThread2().start();
@@ -119,12 +119,7 @@ public class job02 {
         new Thread(my).start();
         new Thread(my).start();
         new Thread(my).start();
-        try {
-            Thread.sleep(10000);
-            System.out.println(MyThread2.intList.size());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
 
     }
 
