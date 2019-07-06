@@ -2,9 +2,21 @@ package com.github.java12;
 
 import java.util.*;
 
+
+/**
+ * 由于数组索引从0开始:
+ *      而我将持有数据从 1 开始
+ *      即 索引对应值 = 索引+1
+ * Arrays.copyOfRange:
+ *      该方法截取时传入三个参数
+ *      1）目标数组
+ *      2）截取索引头 int 索引
+ *      3）截取索引尾 int 索引
+ *      注: 左闭右开
+ */
 class TestPage{
 
-    static int size = 6; //相当于总页数
+    static int size = 100; //相当于总页数
 
     static int[] nums = new int[size];  //相当于持有翻页的数据容器
     static {
@@ -39,6 +51,6 @@ class TestPage{
     }
 
     public static void main(String[] args) {
-        fun(4);
+        fun(97);
     }
 }
