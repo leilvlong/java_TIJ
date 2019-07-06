@@ -12,6 +12,10 @@ interface Weight{
 }
 
 
+/**
+ * @param <T>
+ *     该泛型必须为HasColor的导出
+ */
 class Colored <T extends HasColor>{
     T item;
 
@@ -34,6 +38,10 @@ class Dimension{
 }
 
 
+/**
+ * @param <T>
+ *     该泛型必须为 Dimension 与 HasColor 的导出
+ */
 class ColoredDimension<T extends Dimension & HasColor>{
     T item;
 
@@ -63,6 +71,10 @@ class ColoredDimension<T extends Dimension & HasColor>{
 }
 
 
+/**
+ * @param <T>
+ *      该泛型必须为 Dimension 、HasColor 与 Weight 的导出
+ */
 class Solid <T extends Dimension & HasColor & Weight>{
     T item;
 
@@ -96,6 +108,12 @@ class Solid <T extends Dimension & HasColor & Weight>{
 }
 
 
+/**
+ * @param <T>
+ *     该类继承 ColoredDimension
+ *     则泛型必须满足 ColoredDimension 的泛型子集
+ *     同时允许在自己的泛型子集中添加 Weight
+ */
 class SolidExtend <T extends Dimension & HasColor & Weight> extends ColoredDimension<T>{
 
     public SolidExtend(T item) {
@@ -112,7 +130,7 @@ class SolidExtend <T extends Dimension & HasColor & Weight> extends ColoredDimen
     }
 
     public int weight(){
-        return item.weight();
+        return this.item.weight();
     }
 }
 
