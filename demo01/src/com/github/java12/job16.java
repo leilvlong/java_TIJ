@@ -104,8 +104,10 @@ class NomCovariantArrays{
  * 当然,当你对List<T>进行具体的转型后,它看似可以正常的工作:
  *      毕竟ArrayList的内部持有的是Object[]
  *      但是实际获取容器持有的对象时可能会遇到意料之外的麻烦
+ *      实际异常处在本文中最后一行获取容器元素时
  * 为了容器的安全性:
  *      这种通配符的声明不应出现在创建泛型容器中
+ *      当然要是你有额外的手段确保安全就另说了
  */
 class GenericAndCovariance{
     public static void main(String[] args) {
@@ -137,6 +139,7 @@ class GenericAndCovariance{
         System.out.println(System.identityHashCode(orange));
         System.out.println(orange);
 
-        Orange or = orange.get(1);
+        //  再一次欺骗在编译期欺骗了编译器 然而实体对象实际是Apple
+        Orange or = orange.get(1); //error: ClassCastException
     }
 }
