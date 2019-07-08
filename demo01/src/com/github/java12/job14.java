@@ -131,7 +131,7 @@ class GenericArras2<T>{
         }
 
         //  此处会出现类型转换异常
-        // String[] rep = array.rep();
+        // Integer[] rep = array.rep();
 
         //  由于没有使用类型引用 不会发生异常
         array.rep();
