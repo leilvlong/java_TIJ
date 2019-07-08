@@ -85,7 +85,7 @@ class CovariantArrays {
  * List<Fruit>中可以持有Apple
  * 但不会允许你将指定的泛型Fruit转换为Apple
  * 声明为Fruit就必须创建持有Fruit的容器
- * 而非创建new ArrayList<Apple>()容器
+ * 而非创建new ArrayList<Apple>()容器却给泛型引用List<Fruit>
  */
 class NomCovariantArrays{
     public static void main(String[] args) {
