@@ -116,45 +116,53 @@ class NomCovariantArrays{
 class GenericAndCovariance{
     public static void main(String[] args) {
 
-        List<? extends Fruit> fruits = new ArrayList<>();
+        List<? extends Fruit> fruitsList = new ArrayList<>();
         /*
         fruits.add(new Fruit());
         fruits.add(new Apple());
         fruits.add(new Jonathan());
         fruits.add(new Orange());       */
-
-        List<Fruit> fruit = (List<Fruit>) fruits;
+        System.out.println("-------------------实时监测容器状态-------------------");
+        List<Fruit> fruit = (List<Fruit>) fruitsList;
         fruit.add(new Fruit());
         System.out.println("Returns the same hash code as List: "+ System.identityHashCode(fruit));
         System.out.println("容器引用:List<Fruit>  容器内容: "+ fruit);
 
-        List<Apple> apple = (List<Apple>) fruits;
+        List<Apple> apple = (List<Apple>) fruitsList;
         apple.add(new Apple());
         System.out.println("Returns the same hash code as List: "+System.identityHashCode(apple));
         System.out.println("容器引用:List<Apple>  容器内容: "+apple);
 
-        List<Jonathan> jonathan = (List<Jonathan>) fruits;
+        List<Jonathan> jonathan = (List<Jonathan>) fruitsList;
         jonathan.add(new Jonathan());
         System.out.println("Returns the same hash code as List: "+System.identityHashCode(jonathan));
         System.out.println("容器引用:List<Jonathan>  容器内容: "+jonathan);
 
-        List<Orange> orange = (List<Orange>) fruits;
+        List<Orange> orange = (List<Orange>) fruitsList;
         orange.add(new Orange());
         System.out.println("Returns the same hash code as List: "+System.identityHashCode(orange));
         System.out.println("容器引用:List<Orange>  容器内容: "+orange);
 
 
+        System.out.println("-------------------对容器遍历获取元素-------------------");
         /* //  再一次在编译期欺骗编译器 然而实体对象并不都是是orange
         for (Orange ora : orange) {
             System.out.println(ora);  //error: ClassCastException
         }       */
 
-
-        // 那么 fruits呢 此处是合法的 前文已经解释过
-        // 被泛型标记对象的CheckedClassCast的机制
+        // 那么 fruits呢 此处是合法的 前文已经解释过: 被泛型标记对象的CheckedClassCast的机制
+        // 同时这里也要区分容器泛型转型与容器元素转型的区别
         for (Fruit fru : fruit) {
             System.out.println("容器引用:List<fruit>  容器元素: "+fru);  //里面的元素一定继承自Fruit
         }
+
+
+        System.out.println("-------------------编译器会有多聪明-------------------");
+        /* //综合上下示例说明: 不管是泛型还是什么:编译器只关注传递进来和要返回对象的类型,若无法确定就会给出编译异常
+        Fruit fru = fruitsList.get(1);  //该引用确定上边界类型 可以正常调用,返回边界类型
+        fruitsList.add() //参数为泛型 该引用的泛型无法确定具体类型无法添加 编译异常
+        fruitsList.contains(new Apple()); //参数类型为Object 可以正常使用  */
+
 
     }
 }
