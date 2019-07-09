@@ -56,3 +56,15 @@ public class TempLateTxt {
 
     }
 }
+
+
+/*
+demo01/funs/template.txt:
+        你好 ${name}!! 我很 ${open}!!
+        今天的天气--${status}
+
+demo01/funs/templateOut.txt:
+        你好 hello word!! 我很 happy!!
+        今天的天气--大雨
+
+ */
