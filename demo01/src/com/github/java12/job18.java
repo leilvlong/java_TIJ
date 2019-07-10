@@ -39,8 +39,10 @@ class GenericWriting{
 
 
 /**
- * 通配符边界至少有一个好处:
- *      放宽了容器参数的类型的同时又确定了容器范围
+ * 静态内部类CovariantReader中的readCovariant方法:
+ *      其实际行为允许传入一个上边界泛型List
+ *      即:参数List可以是该泛型任意导出
+ *      因为不确定任意导出的类型,但一定都可以向上转型基类泛型
  */
 class GenericReading{
     static <T> T readExact(List<T> list){
