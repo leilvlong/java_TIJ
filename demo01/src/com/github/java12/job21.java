@@ -47,6 +47,10 @@ class Subtype extends BasicHolder<Subtype>{
  *      使其导出类被限定参数与返回值的类型
  *      在泛型的灵活性上提供了限制
  *      泛型基类成为了一种所有导出类的公共功能的模板
+ * 自限定只能强制作用于继承关系中:
+ *      一旦基类将自身作为泛型,将会强制要求导出类定义泛型参数为自身
+ *      如果使用自限定,就应该了解这个类所用的类型参数将与使用这个参数的类具有相同的基类型
+ *      这是使用这种类的强制要求
  */
 class CRGWithBasicHolder{
     public static void main(String[] args) {
