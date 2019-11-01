@@ -8,6 +8,18 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.io.FileOutputStream;
 
+/*
+JAVA动态代理机制:
+	对象主要分为两个部分，属性与行为，而JAVA中有一种方式专门去定义对象的行为规范:接口。
+	JAVA的动态代理机制需要三个角色来完成：委托者、代理者、代理对象。
+	委托者实现接口，具备规范的行为
+	代理者实现JAVA提供的动态代理接口，实现该接口的invoke方法,并且代理者的构造器接受委托者并组成组合关系
+	代理对象则由Proxy类提供的api构建（由JVM声明并创建），需要委托者的类加载器、委托者自身的所有接口、代理者实例
+	JVM声明并创建的代理对象因为接受了代理者实例作为构造参数，因此与代理者构成组合关系。并且表示实现了委托者所有的接口方法 
+	实际上这些接口方法都做了同一件事情：在所有的方法中都调用代理者实例的invoke方法，把this对象、当前需要执行的method对象、当前的执行参数作为参数传递
+	因此动态代理机制中最终的执行点在代理者的invoke方法中，我们可以在该方法中中对委托者做一些方法增强以及统一处理
+	method对象的执行与获取方式无关,与执行对象有关,这也是代理者构造器需要委托者的原因
+*/
 
 public class job22 {
     public static void main(String[] args) throws Throwable {
