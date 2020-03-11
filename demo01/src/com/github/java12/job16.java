@@ -117,11 +117,10 @@ class GenericAndCovariance{
     public static void main(String[] args) {
 
         List<? extends Fruit> fruitsList = new ArrayList<>();
-        /*
-        fruits.add(new Fruit());
-        fruits.add(new Apple());
-        fruits.add(new Jonathan());
-        fruits.add(new Orange());       */
+        /*fruitsList.add(new Fruit());
+        fruitsList.add(new Apple());
+        fruitsList.add(new Jonathan());
+        fruitsList.add(new Orange());                    */
         System.out.println("-------------------实时监测容器状态-------------------");
         List<Fruit> fruit = (List<Fruit>) fruitsList;
         fruit.add(new Fruit());
