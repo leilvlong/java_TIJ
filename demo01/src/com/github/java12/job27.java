@@ -4,7 +4,12 @@ package com.github.java12;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.lang.Thread.getAllStackTraces;
 
 class MyIterable <T> implements Iterable<T> {
 
@@ -81,3 +86,56 @@ class TestFileBytes{
 
     }
 }
+
+
+class TestStack{
+
+    public static void main(String[] args) {
+
+        StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[0];
+        System.out.println(stackTraceElement.getMethodName());
+
+    }
+
+}
+
+class TestNumStr{
+
+    static final String str = "shdii{67=23}nksd{34}nj{23}";
+
+    public static void main(String[] args) {
+        String reg = "\\{\\d+\\p{Punct}\\d+}";
+        Matcher matcher = Pattern.compile(reg).matcher(str);
+        while (matcher.find()){
+            System.out.println(matcher.group());
+        }
+
+
+    }
+}
+
+class User{
+
+    String name;
+
+    private List list;
+
+
+    private User(String name) {
+        this.name = name;
+    }
+
+    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Method[] methods = User.class.getMethods();
+        for (Method method : methods) {
+            System.out.println(method);
+        }
+    }
+
+
+
+}
+
+
+
+
