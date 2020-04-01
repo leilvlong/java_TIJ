@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class TempLateTxt {
     private static String templatPath = "demo01/funs/template.txt";
     private static String outPath = "demo01/funs/templateOut.txt";
-    private static String regex = ".*\\{(.*)}.*";
+    private static String regex = "\\$\\{([\\w\\p{Punct}]*)}";
 
     private static String replaceKey(String key) {
         return "\\$\\{" + key + "}";
@@ -37,22 +37,18 @@ public class TempLateTxt {
         FileWriter writer = new FileWriter(new File(outPath));
 
         int i = 0;
-        char[] chars = new char[1024];
+        char[] chars = new char[1024*8];
         while ((i = fileReader.read(chars)) != -1) {
             String s = new String(chars, 0, i);
-            String[] split = s.split("\\$");
-            if (split.length>1){
-                for (String filed : split) {
-                    System.out.println(filed);
-                    Matcher matcher = Pattern.compile(regex).matcher(filed);
-                    while (matcher.find()) {
-                        String key = matcher.group(1);
-                        String data = replaceData.get(key);
-                        String regexKey = replaceKey(key);
-                        s = s.replaceFirst(regexKey,data);
-                    }
-                }
+
+            Matcher matcher = Pattern.compile(regex).matcher(s);
+            while (matcher.find()) {
+                String key = matcher.group(1);
+                String data = replaceData.get(key);
+                String regexKey = replaceKey(key);
+                s = s.replaceFirst(regexKey,data);
             }
+
             writer.write(s);
         }
 
@@ -77,17 +73,16 @@ demo01/funs/templateOut.txt:
 class TEST{
     public static void main(String[] args) {
 
-        String template = "你好${hello}, 我很${open}";
+        String template = "你好${hellD88**}}, 我很${open}";
 
         Map<String, String> map = new HashMap<>();
         map.put("hello","hello world" );
         map.put("open", "open star");
 
-        String reg = ".*(\\$\\{.+}).*";
+        String reg = "\\$\\{([\\w\\p{Punct}]*)}";
 
 
         Matcher matcher = Pattern.compile(reg).matcher(template);
-        System.out.println(matcher.toString());
         while (matcher.find()){
             String group = matcher.group(1);
             System.out.println(group);
