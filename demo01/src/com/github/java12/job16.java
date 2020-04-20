@@ -3,7 +3,14 @@ package com.github.java12;
 import java.util.ArrayList;
 import java.util.List;
 
-class Fruit{
+class Botany{
+    @Override
+    public String toString() {
+        return "Botany";
+    }
+}
+
+class Fruit extends Botany{
     @Override
     public String toString() {
         return "Fruit";
@@ -32,13 +39,15 @@ class Orange extends Fruit{
 };
 
 /**
- * 创建一个Fruit[]引用的Apple[]数组
- * 这里令人迷惑之处：向上转型不适合这里
- * 因为引用是Fruit[]的，所以编译器在编译期允许你向数组添加 new Fruit()
- * 然而实际工作时数组本身是 Apple[]，java不会维护向下的转型
- * new Fruit()无法像 new Apple() 一样工作
- * 即: Apple[] apples = (Apple[]) fruits; 时,
- * 里面的 new Fruit()无法做到像 Apple()一样工作
+ * 如何骗过编译期检查:
+ *      创建父类引用
+ *      实际创建对象数组是子类
+ *      然后向其添加父类对象
+ *      成功躲过编译期检查
+ *      尽管拿出元素时依然是父类引用
+ *      但是实际对象类型是apple
+ *      当进行引用转换时,父类引用不可以转换成子类
+ *      因此在转换为字节码时会抛出数组存储异常
  */
 class CovariantArrays {
     public static void main(String[] args) {
@@ -46,7 +55,7 @@ class CovariantArrays {
         fruits[0] =new Apple();
         fruits[1] =new Jonathan();
         fruits[3] = new Fruit(); // error: ArrayStoreException
-        Apple[] apples = (Apple[]) fruits;
+        Fruit fruit = fruits[0];
     }
 }
 
@@ -88,7 +97,7 @@ class CovariantArrays {
  * 而非创建new ArrayList<Apple>()容器却给泛型引用List<Fruit>
  * 即: 不能把一个涉及Apple的泛型赋给一个涉及Fruit的泛型
  */
-class NomCovariantArrays{
+class  UpperBoundaryDemo{
     public static void main(String[] args) {
         // List<Fruit> fruits = new ArrayList<Apple>();
     }
@@ -96,32 +105,27 @@ class NomCovariantArrays{
 
 
 /**
- * 容器也有自己的泛型引用边界:
- *      List<? extends Object> 与 List<? super Object>
- * 使用通配符表示:声明任何继承自Fruit的 new ArrayLis<>();
- * 这意味着实际上这个容器除了装null,什么也做不了,
- * 正是因为它可以是任何继承自 Fruit 的
- * 这种不确定性使得它无法安全的转型:
- *      发生在下文中的容器转型会使得里面的元素很尴尬
- *      而Java并不维护向下转型
- * 当然,当你对List<T>进行具体的转型后,它看似可以正常的工作:
- *      毕竟ArrayList的内部持有的是Object[]
- *      但是实际获取容器持有的对象时可能会遇到意料之外的麻烦
- *      实际异常处在本文中最后一行获取容器元素时
- * 为了容器的安全性:
- *      这种通配符的声明不应出现在创建泛型容器中
- *      当然要是你有额外的手段确保安全就另说了
- * 请完整的看完以下案例,编译器到底会有多睿智!!
+ *  ? 表示实例对象
+ *  List<? extends Fruit> 更像是一种表达式,表明实例对象继承自Fruit
+ *  用于表示实例化时可以确定父类型的未知类型
+ *  因此被称为上边界通配符
+ *  编译器在泛型容器中只关心进来的对象和出去的对象
  */
 class GenericAndCovariance{
     public static void main(String[] args) {
 
         List<? extends Fruit> fruitsList = new ArrayList<>();
-        /*fruitsList.add(new Fruit());
+
+        /*
+        // 因为无法确定最后会有多少子类信息,所以拒绝直接添加任何元素
+        fruitsList.add(new Fruit());
         fruitsList.add(new Apple());
         fruitsList.add(new Jonathan());
-        fruitsList.add(new Orange());                    */
-        System.out.println("-------------------实时监测容器状态-------------------");
+        fruitsList.add(new Orange());             */
+
+        // 但是管理非常松散，允许你随意转型，
+        // 只要是我的子类即可，转型后即可添加元素
+        // 这当然是合理的，容器若无法持有对象，有什么意义呢？
         List<Fruit> fruit = (List<Fruit>) fruitsList;
         fruit.add(new Fruit());
         System.out.println("Returns the same hash code as List: "+ System.identityHashCode(fruit));
@@ -142,26 +146,94 @@ class GenericAndCovariance{
         System.out.println("Returns the same hash code as List: "+System.identityHashCode(orange));
         System.out.println("容器引用:List<Orange>  容器内容: "+orange);
 
+        /*
+        // 语法上是合法的
+        // 这很显然是个设计的缺陷，既然限定了边界还允许向上转型就显得不怎么合适
+        // 尤其是编译成class文件时能够检查出就显得语法上的合法更加不合适
+        List<Botany> botanies = (List<Botany>) fruitsList;
+        botanies.add(new Botany());     */
 
         System.out.println("-------------------对容器遍历获取元素-------------------");
-        /* //  再一次在编译期欺骗编译器 然而实体对象并不都是是orange
+
+        /*
+        // 语法上是合法的
+        //获取元素时则需要当心，并非都orange
         for (Orange ora : orange) {
             System.out.println(ora);  //error: ClassCastException
-        }       */
+        }*/
 
-        // 那么 fruits呢 此处是合法的 前文已经解释过: 被泛型标记对象的CheckedClassCast的机制
-        // 同时这里也要区分容器泛型转型与容器元素转型的区别
-        for (Fruit fru : fruit) {
+        // 该继承体系的根级引用自然是合法的
+        for (Fruit fru : fruitsList) {
             System.out.println("容器引用:List<fruit>  容器元素: "+fru);  //里面的元素一定继承自Fruit
         }
 
-
-        System.out.println("-------------------编译器会有多聪明-------------------");
-        /* //综合上下示例说明: 不管是泛型还是什么:编译器只关注传递进来和要返回对象的类型,若无法确定就会给出编译异常
-        Fruit fru = fruitsList.get(1);  //该引用确定上边界类型 可以正常调用,返回边界类型
-        fruitsList.add() //参数为泛型 该引用的泛型无法确定具体类型无法添加 编译异常
-        fruitsList.contains(new Apple()); //参数类型为Object 可以正常使用  */
+    }
+}
 
 
+/**
+ *  ? 表示实例对象
+ *  List<? super Apple> 更像是一种表达式,表明实例对象到Apple为止,不可以再向下了
+ *  用于表示实例化时可以确定子类型的未知类型。
+ *  因此被称为下边界通配符
+ */
+class LowerBoundaryDemo{
+    public static void main(String[] args) {
+
+        List<? super Apple> list = new ArrayList<>();
+
+        list.add(new Jonathan());
+        list.add(new Apple());
+
+        /*
+        // 拒绝添加基类
+        list.add(new Fruit());
+         */
+
+        List<Apple> apples = (List<Apple>) list;
+
+        for (Apple apple : apples) {
+            System.out.println(apple);
+        }
+
+        /*
+        // 禁止向下转型:
+        List<Jonathan> jonathans = (List<Jonathan>) list;   */
+
+        // 但是可以向上转型
+        List<Fruit> fruits = (List<Fruit>) list;
+        for (Fruit fruit : fruits) {
+            System.out.println(fruit);
+        }
+
+        // 可以向上转型
+        List<Botany> botanies = (List<Botany>) list;
+        for (Botany botany : botanies) {
+            System.out.println(botany);
+        }
+
+        // 还记得继承时子类对象创建一定会初始化基类吗 所以这是合法的(向上转型)
+        // 而基类对象创建时不会创建子类对象,这是不可维护的,因此禁止向下转型
+
+        // 因此List<? super Apple>拒绝添加基类Fruit的实例对象
+        // 因为一旦当引用向上转换后，再转回，Fruit对象是无法当Apple对象使用的
+        // Fruit无法知道Apple里面在继承后又新做了些什么
+
+        // 因此List<? super Apple>允许添加Jonathan是合理的
+        // Jonathan对象的初始化会让Apple也初始化
+
+        // 因此List<? super Apple>不允许转型为List<Jonathan>也是合理的
+        // 理由同上
+
+        // 所以下边界中 元素的添加只允许添加相对Apple的子类
+        // 转型的边界则是 Apple 且相对Apple只能向上转型
+
+        // 相较于上边界，下边界的管理严厉了很多
+
+        // 当未指定具体的类型而需要拿出元素时，则默认为Object
+        // Object的原因当然是因为没指定具体的类型咯
+        for (Object o : list) {
+            System.out.println(o);
+        }
     }
 }
