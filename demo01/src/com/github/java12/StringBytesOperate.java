@@ -20,12 +20,12 @@ public class StringBytesOperate {
 
 
     public static void main(String[] args) {
-        setSql("set id = ? and pwd = ?");
+        setSql("set id = ? and pwd = ? and age = ?");
 
 
         System.out.println(replace(1, "123"));
         System.out.println(replace(2, "123"));
-        System.out.println(replace(1, "123456"));
+        System.out.println(replace(3, "17"));
         System.out.println(replace(2, "12dada3456"));
         System.out.println(replace(1, "12dada3456"));
 
@@ -57,6 +57,9 @@ public class StringBytesOperate {
 
 
     public static String replace(int index, String parameter){
+
+        long start = System.currentTimeMillis();
+
         int parameterIndex = indexMessage[index-1][sqlIndex];
 
         int indexParameterLength = indexMessage[index-1][sqlParameterLen];
@@ -87,6 +90,8 @@ public class StringBytesOperate {
         }
 
         executeSql = new String(newSqlBytes);
+
+        System.out.println("执行时间: " + (System.currentTimeMillis() - start));
 
         return executeSql;
     }
