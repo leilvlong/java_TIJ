@@ -21,7 +21,7 @@ public class SingleTrackLinkedListReversal {
 
         list.reversalByLogic();
 
-        System.out.println(list.get(0));
+        System.out.println(list.get(3));
     }
 }
 
@@ -154,6 +154,9 @@ class SingleTrackLinkedList<T> implements Iterable<T>{
     }
 
     public T get(int index){
+        if (index>= size){
+            throw new IndexOutOfBoundsException();
+        }
         Node pre = first;
         for (int i = 0; i < index; i++) {
             pre = pre.next;
