@@ -7,29 +7,27 @@ import java.util.LinkedList;
 public class SingleTrackLinkedListReversal {
 
     public static void main(String[] args) {
-        new LinkedList<>();
+
         SingleTrackLinkedList<Integer> list = new SingleTrackLinkedList<>();
         list.add(1);
         list.add(2);
         list.add(3);
         list.add(4);
 
-        list.reversalByRecursion();
-        for (Object o : list) {
-            System.out.println(o);
+        for (Integer integer : list) {
+            System.out.println(integer);
         }
-        System.out.println(list.last.data);
+
+        list.reversalByLogic();
 
     }
 }
 
-class SingleTrackLinkedList<T> implements Iterable{
-     private static  int count = 0;
-     private Node<T> first;
+class SingleTrackLinkedList<T> implements Iterable<T>{
 
-     Node<T> last;
-
-     private int size;
+    private Node<T> first;
+    private Node<T> last;
+    private int size;
 
     public void add(T data){
         Node<T> l = last;
@@ -55,9 +53,8 @@ class SingleTrackLinkedList<T> implements Iterable{
 
     }
 
-    // 写递归最重要的是要明白,指向的对象是同一对象
-    public Node reversalRecursion(Node node){
-        count++;
+    // 写递归最重要的是要明白,指向的对象和出栈的对象
+    private Node reversalRecursion(Node node){
         if (node == null || node.getNext() == null){
             return node;
         }
@@ -70,27 +67,32 @@ class SingleTrackLinkedList<T> implements Iterable{
 
 
     public void reversalByLogic(){
-
         Node pre = first;
-        Node cur = pre.getNext();
+        Node next = first.next;
         Node tmp;
-        while (cur != null) {
-            tmp = cur.getNext();
-            cur.setNext(pre);
-            pre = cur;
-            cur = tmp;
+
+        while (next != null){
+            tmp = next.next;
+            next.setNext(pre);
+            pre = next;
+            next = tmp;
         }
-        first.setNext(null);
         last = first;
         first = pre;
+
         Iterator<T> iterator = iterator();
-        while (iterator.hasNext()) {
+        while (iterator.hasNext()){
             System.out.println(iterator.next());
         }
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new IteratorClass();
+    }
 
-    class Node<T>{
+
+    private class Node<T>{
         T data;
         Node next;
 
@@ -117,29 +119,35 @@ class SingleTrackLinkedList<T> implements Iterable{
     }
 
 
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            private int nextIndex;
+    private class IteratorClass implements Iterator<T>{
 
-            private Node next;
+        private int nextIndex;
 
-            @Override
-            public boolean hasNext() {
+        private Node next;
 
-                return nextIndex++ < size;
+        @Override
+        public boolean hasNext() {
+
+            return nextIndex++ < size;
+        }
+
+        @Override
+        public T next() {
+            if (nextIndex == 1){
+                next = first.next;
+                return (T)first.data;
             }
+            Node oldNext = next;
+            next = next.next;
+            return (T) oldNext.data;
+        }
+    }
 
-            @Override
-            public T next() {
-                if (nextIndex == 1){
-                    next = first.next;
-                    return (T)first.data;
-                }
-                Node oldNext = next;
-                next = next.next;
-                return (T) oldNext.data;
-            }
-        };
+    public T getFirst(){
+        return first.data;
+    }
+
+    public T getLast(){
+        return last.data;
     }
 }
