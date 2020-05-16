@@ -14,12 +14,14 @@ public class SingleTrackLinkedListReversal {
         list.add(3);
         list.add(4);
 
+
         for (Integer integer : list) {
             System.out.println(integer);
         }
 
         list.reversalByLogic();
 
+        System.out.println(list.get(0));
     }
 }
 
@@ -149,5 +151,13 @@ class SingleTrackLinkedList<T> implements Iterable<T>{
 
     public T getLast(){
         return last.data;
+    }
+
+    public T get(int index){
+        Node pre = first;
+        for (int i = 0; i < index; i++) {
+            pre = pre.next;
+        }
+        return (T)pre.data;
     }
 }
